@@ -172,63 +172,19 @@ def product_detail(request, product_id: str):
     Detail page: fetch a single product from the external API and render
     the existing `product_detail.html` template.
     """
-    # NOTE: The `product_id` path parameter may now be either a true
-    # upstream product ID/UUID *or* a human‑readable slug
-    # (e.g. "dropper-bottle-supplier"). We first try the ID endpoint,
-    # and if that returns 404 we fall back to resolving the slug via
-    # the search API and then re‑calling the detail endpoint by ID.
-    identifier = (product_id or "").strip()
-    if not identifier:
+    product_id = (product_id or "").strip()
+    if not product_id:
         raise Http404("Product not found")
 
-    # Try direct lookup by ID / UUID first.
+    # Call the upstream detail endpoint using the product UUID / ID.
     try:
         upstream = _call_globesuggest_api(
-            f"/globesuggest/api/products/{urllib.parse.quote(identifier)}/"
+            f"/globesuggest/api/products/{urllib.parse.quote(product_id)}/"
         )
     except urllib.error.HTTPError as exc:
-        if exc.code != 404:
-            # Non‑404 upstream errors surface as a generic "temporarily unavailable".
-            raise Http404("Unable to load product at this time")
-
-        # --- Fallback: treat the identifier as a slug and resolve it to a true ID ---
-        slug = identifier
-        try:
-            search_res = _call_globesuggest_api(
-                "/globesuggest/api/products/search/",
-                params={"q": slug},
-            )
-        except Exception:
-            # If even the search fails, show a clean 404 rather than a 500.
+        if exc.code == 404:
             raise Http404("Product not found")
-
-        items = search_res.get("data") or search_res.get("results") or []
-        matched = None
-        for item in items:
-            raw_slug = (item.get("product_slug") or item.get("slug") or "").strip()
-            if raw_slug == slug:
-                matched = item
-                break
-
-        if not matched and items:
-            # Best effort: fall back to the first search hit if no exact slug match.
-            matched = items[0]
-
-        if not matched:
-            raise Http404("Product not found")
-
-        resolved_id = (matched.get("product_id") or matched.get("id") or "").strip()
-        if not resolved_id:
-            raise Http404("Product not found")
-
-        try:
-            upstream = _call_globesuggest_api(
-                f"/globesuggest/api/products/{urllib.parse.quote(resolved_id)}/"
-            )
-            # For downstream processing we still want to know the canonical ID
-            identifier = resolved_id
-        except Exception:
-            raise Http404("Unable to load product at this time")
+        raise Http404("Unable to load product at this time")
     except Exception:
         raise Http404("Unable to load product at this time")
 
@@ -249,22 +205,9 @@ def product_detail(request, product_id: str):
             or ""
         ),
         # Ensure templates can always link back to this detail page by ID.
-        "product_id": raw_product.get("product_id") or identifier,
-        "id": raw_product.get("id") or raw_product.get("product_id") or identifier,
+        "product_id": raw_product.get("product_id") or product_id,
+        "id": raw_product.get("id") or raw_product.get("product_id") or product_id,
     }
-
-    # Ensure we always expose a stable product slug for clean URLs.
-    raw_slug = raw_product.get("product_slug") or raw_product.get("slug") or ""
-    if raw_slug:
-        slug = str(raw_slug).strip()
-    else:
-        base_slug = slugify(product["product_title"]) if product["product_title"] else ""
-        pid_for_slug = str(product["product_id"] or product_id).strip()
-        slug = f"{base_slug}-{pid_for_slug}" if base_slug and pid_for_slug else base_slug or pid_for_slug
-
-    if slug:
-        product["slug"] = slug
-        product["product_slug"] = slug
 
     # Normalise FAQ data from API into a template-friendly collection.
     # The upstream payload provides:
@@ -326,55 +269,18 @@ def blog_detail(request, product_id: str, blog_index: int):
     Reuses the product detail API and picks the requested blog from
     the product's `blog_posts` collection.
     """
-    # As with `product_detail`, the path component may be either a true
-    # product ID/UUID or a human‑friendly slug. We resolve slugs via the
-    # search endpoint when the direct ID lookup returns 404.
-    identifier = (product_id or "").strip()
-    if not identifier:
+    product_id = (product_id or "").strip()
+    if not product_id:
         raise Http404("Product not found")
 
     try:
         upstream = _call_globesuggest_api(
-            f"/globesuggest/api/products/{urllib.parse.quote(identifier)}/"
+            f"/globesuggest/api/products/{urllib.parse.quote(product_id)}/"
         )
     except urllib.error.HTTPError as exc:
-        if exc.code != 404:
-            raise Http404("Unable to load product at this time")
-
-        slug = identifier
-        try:
-            search_res = _call_globesuggest_api(
-                "/globesuggest/api/products/search/",
-                params={"q": slug},
-            )
-        except Exception:
+        if exc.code == 404:
             raise Http404("Product not found")
-
-        items = search_res.get("data") or search_res.get("results") or []
-        matched = None
-        for item in items:
-            raw_slug = (item.get("product_slug") or item.get("slug") or "").strip()
-            if raw_slug == slug:
-                matched = item
-                break
-
-        if not matched and items:
-            matched = items[0]
-
-        if not matched:
-            raise Http404("Product not found")
-
-        resolved_id = (matched.get("product_id") or matched.get("id") or "").strip()
-        if not resolved_id:
-            raise Http404("Product not found")
-
-        try:
-            upstream = _call_globesuggest_api(
-                f"/globesuggest/api/products/{urllib.parse.quote(resolved_id)}/"
-            )
-            identifier = resolved_id
-        except Exception:
-            raise Http404("Unable to load product at this time")
+        raise Http404("Unable to load product at this time")
     except Exception:
         raise Http404("Unable to load product at this time")
 
@@ -389,22 +295,9 @@ def blog_detail(request, product_id: str, blog_index: int):
         "short_description": raw_product.get("short_description")
         or raw_product.get("description")
         or "",
-        "product_id": raw_product.get("product_id") or identifier,
-        "id": raw_product.get("id") or raw_product.get("product_id") or identifier,
+        "product_id": raw_product.get("product_id") or product_id,
+        "id": raw_product.get("id") or raw_product.get("product_id") or product_id,
     }
-
-    # Ensure a stable slug is available for URLs and templates.
-    raw_slug = raw_product.get("product_slug") or raw_product.get("slug") or ""
-    if raw_slug:
-        slug = str(raw_slug).strip()
-    else:
-        base_slug = slugify(product["product_title"]) if product["product_title"] else ""
-        pid_for_slug = str(product["product_id"] or product_id).strip()
-        slug = f"{base_slug}-{pid_for_slug}" if base_slug and pid_for_slug else base_slug or pid_for_slug
-
-    if slug:
-        product["slug"] = slug
-        product["product_slug"] = slug
 
     blog_posts = raw_product.get("blog_posts") or []
     # blog_index in the URL is 1-based to match the template loop counter.
