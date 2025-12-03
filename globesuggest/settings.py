@@ -74,16 +74,15 @@ WSGI_APPLICATION = 'globesuggest.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# MySQL Database Configuration
-# Make sure to install the required package: pip install mysqlclient
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'globesuggest_db',
         'USER': 'globesuggest_user',
         'PASSWORD': 'Lemon$$11g',
-        'HOST': 'localhost',  # Or your MySQL server address
-        'PORT': '3306',       # Default MySQL port
+        'HOST': 'localhost', 
+        'PORT': '3306',       
     }
 }
 
@@ -142,7 +141,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # External Globesuggest / 1Matrix API configuration
 # Default base URL now points to the dedicated app host as requested.
 GLOBESUGGEST_API_BASE = os.environ.get('GLOBESUGGEST_API_BASE', 'https://app.1matrix.io')
-GLOBESUGGEST_API_KEY = os.environ.get('GLOBESUGGEST_API_KEY', 'Helpeza@2312')
+GLOBESUGGEST_API_KEY = os.environ.get('GLOBESUGGEST_API_KEY')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
