@@ -141,7 +141,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # External Globesuggest / 1Matrix API configuration
 # Default base URL now points to the dedicated app host as requested.
 GLOBESUGGEST_API_BASE = os.environ.get('GLOBESUGGEST_API_BASE', 'https://app.1matrix.io')
-GLOBESUGGEST_API_KEY = os.environ.get('GLOBESUGGEST_API_KEY')
+GLOBESUGGEST_API_KEY = os.environ.get('GLOBESUGGEST_API_KEY', 'Helpeza@2312')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

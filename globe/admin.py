@@ -2,15 +2,7 @@ from django.contrib import admin
 from django import forms
 from django.db import models
 
-from .models import (
-    PrivacyPolicy,
-    TermsOfService,
-    CookiesPolicy,
-    ContactEnquiry,
-    ContactRecipientEmail,
-    Lead,
-)
-
+from .models import *
 
 class TinyMCEPolicyWidget(forms.Textarea):
     """
@@ -129,3 +121,20 @@ class LeadAdmin(admin.ModelAdmin):
     )
     readonly_fields = ("created_at", "updated_at", "submitted_at", "source_ip", "user_agent")
     ordering = ("-created_at",)
+
+
+
+class ServiceTabPointInline(admin.TabularInline):
+    model = ServiceTabPoint
+    extra = 5
+    max_num = 5
+    fields = ("order", "icon", "title", "description")
+
+
+@admin.register(ServiceTab)
+class ServiceTabAdmin(admin.ModelAdmin):
+    list_display = ("tab_name", "order", "is_active")
+    list_filter = ("is_active",)
+    search_fields = ("tab_name",)
+    ordering = ("order", "tab_name")
+    inlines = [ServiceTabPointInline]

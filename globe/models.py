@@ -2,6 +2,73 @@ from django.db import models
 from django.core.exceptions import ValidationError
 
 
+
+
+class ServiceTab(models.Model):
+    """
+    Configurable "Tabs section" entry for the product detail page.
+
+    Each tab holds a title + description and up to ~5 highlight points that
+    are rendered in a cards layout (see ServiceTabPoint).
+    """
+
+    tab_name = models.CharField(
+        max_length=120,
+        help_text="Tab label shown in the navigation and inside the hero area.",
+    )
+    order = models.PositiveIntegerField(
+        default=0,
+        help_text="Lower numbers appear first in the tabs navigation."
+    )
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Uncheck to hide this tab from the site without deleting it."
+    )
+
+    class Meta:
+        ordering = ["order", "tab_name"]
+        verbose_name = "Tabs section tab"
+        verbose_name_plural = "Tabs section tabs"
+
+    def __str__(self):
+        return self.tab_name
+
+
+class ServiceTabPoint(models.Model):
+    """
+    Individual point displayed inside a ServiceTab.
+
+    Admins can configure up to 5 points per tab (not enforced at DB level,
+    but the template will render at most 5).
+    """
+
+    tab = models.ForeignKey(
+        ServiceTab,
+        on_delete=models.CASCADE,
+        related_name="points",
+    )
+    icon = models.ImageField(
+        upload_to="tabs/points/",
+        blank=True,
+        null=True,
+        help_text="Upload icon image for this point (e.g. 32x32 PNG/SVG).",
+    )
+    title = models.CharField(max_length=150)
+    description = models.TextField()
+    order = models.PositiveIntegerField(
+        default=0,
+        help_text="Controls the order of points inside a tab."
+    )
+
+    class Meta:
+        ordering = ["order", "title"]
+        verbose_name = "Tabs section point"
+        verbose_name_plural = "Tabs section points"
+
+    def __str__(self):
+        return f"{self.tab.tab_name} – {self.title}"
+        
+
 class BasePolicy(models.Model):
     """
     Abstract base model for legal / policy pages.

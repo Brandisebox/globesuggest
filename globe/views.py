@@ -19,6 +19,8 @@ from .models import (
     ContactEnquiry,
     ContactRecipientEmail,
     Lead,
+    ServiceTab,
+    ServiceTabPoint,
 )
 
 
@@ -191,17 +193,53 @@ def product_detail(request, product_id: str):
     # Light normalisation so existing template fields have something to show.
     product = {
         **raw_product,
-        "product_title": raw_product.get("product_title")
-        or raw_product.get("product_name")
-        or raw_product.get("name")
-        or "",
-        "short_description": raw_product.get("short_description")
-        or raw_product.get("description")
-        or "",
+        "product_title": (
+            raw_product.get("product_title")
+            or raw_product.get("product_name")
+            or raw_product.get("name")
+            or ""
+        ),
+        "short_description": (
+            raw_product.get("short_description")
+            or raw_product.get("description")
+            or ""
+        ),
         # Ensure templates can always link back to this detail page by ID.
         "product_id": raw_product.get("product_id") or product_id,
         "id": raw_product.get("id") or raw_product.get("product_id") or product_id,
     }
+
+    # Normalise FAQ data from API into a template-friendly collection.
+    # The upstream payload provides:
+    # "faqs": [{"question": "...", "answer": "..."}, ...]
+    raw_faqs = raw_product.get("faqs") or raw_product.get("faq") or []
+    faqs_formatted: list[dict] = []
+    if isinstance(raw_faqs, (list, tuple)):
+        for item in raw_faqs:
+            if not isinstance(item, dict):
+                continue
+            question = str(item.get("question") or "").strip()
+            answer = str(item.get("answer") or "").strip()
+            if not (question and answer):
+                continue
+            faqs_formatted.append(
+                {
+                    "question": question,
+                    "answer": answer,
+                }
+            )
+
+    # Expose under the key expected by `product_detail.html`.
+    if faqs_formatted:
+        product["faqs_formatted"] = faqs_formatted
+
+    # Load dynamic "Why / Guarantee / Quality / QC" tabs content from the database.
+    # These tabs are global (not product-specific) and rendered in `product_detail.html`.
+    tabs_section = (
+        ServiceTab.objects.filter(is_active=True)
+        .order_by("order", "tab_name")
+        .prefetch_related("points")
+    )
 
     # Minimal JSON-LD; you can extend this as needed.
     product_schema = json.dumps(
@@ -220,6 +258,7 @@ def product_detail(request, product_id: str):
         {
             "product": product,
             "product_schema": product_schema,
+            "tabs_section": tabs_section,
         },
     )
 
