@@ -74,6 +74,20 @@ WSGI_APPLICATION = 'globesuggest.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# MySQL Database Configuration
+# Make sure to install the required package: pip install mysqlclient
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'globesuggest_db',
+        'USER': 'globesuggest_user',
+        'PASSWORD': 'Lemon$$11g',
+        'HOST': 'localhost',  # Or your MySQL server address
+        'PORT': '3306',       # Default MySQL port
+    }
+}
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
