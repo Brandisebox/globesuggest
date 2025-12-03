@@ -1,0 +1,458 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>globesuggest - Find Your Perfect Product</title>
+    <meta name="description" content="Search and discover amazing products tailored for you.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .content-container {
+            height: calc(100vh - 74px); /* Adjust based on header height */
+            overflow-y: auto;
+            width: 100%;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        .quicksand-font {
+            font-family: "Quicksand", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+        }
+        
+        /* Ensure consistent layout across all screen sizes */
+        .main-content-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            max-height: 100%;
+            padding-bottom: 10vh;
+        }
+        
+        /* Cap the maximum width to prevent overexpansion on very large screens */
+        .max-container-width {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+    </style>
+    <link rel="shortcut icon" href="/media/bee_logo.png" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+</head>
+<body class="quicksand-font bg-gray-50 h-full flex flex-col">
+
+    <!-- Header -->
+    <header class="">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center max-container-width">
+            <div class="text-sm text-gray-800 flex items-center">
+                <a href="https://1matrix.io" class="hover:opacity-90 transition-all duration-200">
+                    <h1 class="text-[1rem] font-[400] text-black mb-2 md:mb-3 transition-all duration-300">Web App</h1>
+                </a>
+            </div>
+            <div class="flex items-center">
+                <button class="bg-indigo-600 text-white px-4 sm:px-4 md:px-5 py-2 sm:py-2 text-sm sm:text-sm md:text-base rounded-full hover:bg-indigo-700 transition-colors duration-200 whitespace-nowrap shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95">
+                    Free Listing
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <div class="content-container flex-grow mb-[200px] sm:mb-0">
+        <main class="max-container-width mx-auto px-6 text-center h-full flex flex-col">
+            <div class="main-content-wrapper">
+                <div class="flex flex-col items-center justify-center">
+                    <img src="{% static 'logo/globesuggest_logo.png' %}" alt="globesuggest Logo" class="h-16 sm:h-20 md:h-24 w-auto mb-4 md:mb-6 transition-all duration-300">
+                </div>
+            
+                <!-- Search Bar -->
+                <div class="w-full max-w-[600px] mt-2 sm:mt-5 px-4 sm:px-6 md:px-0">
+                    <div class="w-full mx-auto">
+                        <div class="relative" role="search">
+                            <label for="search-input" class="sr-only">Search for a product</label>
+                            <input
+                                type="search"
+                                id="search-input"
+                                name="q"
+                                placeholder="Search for a product (e.g., 'Dropper Bottle')"
+                                class="w-full px-6 pl-12 py-4 text-base text-gray-700 bg-white border border-gray-200 rounded-full shadow-md outline-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                role="combobox"
+                                aria-autocomplete="list"
+                                aria-expanded="false"
+                                aria-controls="search-results"
+                                autocomplete="off"
+                            >
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                            
+                            <!-- Search Results Section (moved inside the search bar container) -->
+                            <div id="results" class="absolute left-0 right-0 top-full mt-1 z-10 w-full bg-white overflow-hidden rounded-2xl max-h-[70vh] overflow-y-auto" role="listbox" aria-label="Product suggestions" aria-live="polite">
+                                <!-- Dynamic content will be injected here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Removed separate results section as it's now part of the search component -->
+        </main>
+    </div>
+    <footer id="contact" class="bg-[#F2F2F2]">
+        <div class="container mx-auto px-6 py-4 max-container-width">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-4 mb-3 md:mb-0 md:w-1/3 justify-start">
+                    <img src="/media/globesuggest_logo.png" alt="globesuggest" class="h-6 w-auto">
+                    <div class="flex space-x-3">
+                        <a href="mailto:connect@globesuggest.com?subject=Opportunities%20with%20globesuggest&body=Hi%20globesuggest%20team%2C%20I%27d%20love%20to%20connect%20regarding..." class="text-gray-600 hover:text-indigo-600 transition-colors duration-200 text-sm" target="_blank" rel="noopener noreferrer" onclick="(function() { 
+                            if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                                window.location.href = 'mailto:connect@globesuggest.com?subject=Opportunities%20with%20globesuggest&body=Hi%20globesuggest%20team%2C%20I%27d%20love%20to%20connect%20regarding...';
+                            } else {
+                                // For desktop, use Gmail
+                                window.open('https://mail.google.com/mail/?extsrc=mailto&url=mailto:connect@globesuggest.com?subject=Opportunities%20with%20globesuggest&body=Hi%20globesuggest%20team%2C%0A%0AI'd%20love%20to%20connect%20regarding%20potential%20opportunities%20with%20globesuggest.%0A%0ALooking%20forward%20to%20hearing%20from%20you%2C', '_blank');
+                            }
+                            return false;
+                        })();"><i class="fas fa-envelope"></i></a>
+                        <a href="#" class="text-gray-600 hover:text-indigo-600 transition-colors duration-200 text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 inline-block" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="text-center text-xs text-gray-500 md:w-1/3 order-3 md:order-2 mt-3 md:mt-0">
+                    &copy; 2025 globesuggest. All Rights Reserved.
+                </div>
+                
+                <div class="flex items-center space-x-6 mb-3 md:mb-0 md:w-1/3 justify-end order-2 md:order-3">
+                    <a href="#" class="text-gray-600 hover:text-indigo-600 transition-colors duration-200 text-sm border border-black rounded-full px-3 py-1" onclick="openLeadPopup(); return false;">Get Lead</a>
+                    <a href="{% url 'privacy_policy' %}" class="text-gray-600 hover:text-indigo-600 transition-colors duration-200 text-sm">Privacy</a>
+                    <a href="{% url 'terms_of_service' %}" class="text-gray-600 hover:text-indigo-600 transition-colors duration-200 text-sm">Terms</a>
+                    <a href="{% url 'cookies_policy' %}" class="text-gray-600 hover:text-indigo-600 transition-colors duration-200 text-sm">Cookie</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-4 right-4 z-50 hidden">
+        <div id="toast-inner" class="max-w-sm bg-red-600 text-white text-sm px-4 py-3 rounded-lg shadow-lg flex items-center space-x-3">
+            <span id="toast-message"></span>
+        </div>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('search-input');
+        const resultsDiv = document.getElementById('results');
+        const toastEl = document.getElementById('toast');
+        const toastMessageEl = document.getElementById('toast-message');
+        const toastInnerEl = document.getElementById('toast-inner');
+        let debounceTimer;
+        let activeIndex = -1;
+        let currentSuggestions = [];
+        let currentController = null;
+        let toastTimer;
+
+        const MEDIA_HOST = 'https://app.1matrix.io';
+        function toAbsoluteUrl(url) {
+            if (!url) return '';
+            const u = String(url).trim();
+            if (!u) return '';
+            if (/^https?:\/\//i.test(u)) return u;
+            if (u.startsWith('/')) return `${MEDIA_HOST}${u}`;
+            return `${MEDIA_HOST}/${u}`;
+        }
+
+        function setLoading() {
+            resultsDiv.innerHTML = '<div class="p-4 text-center text-gray-500">Searching…</div>';
+            searchInput.setAttribute('aria-expanded', 'true');
+        }
+
+        function showToast(message, type = 'error') {
+            if (!toastEl || !toastMessageEl || !toastInnerEl) return;
+            clearTimeout(toastTimer);
+
+            toastMessageEl.textContent = message;
+
+            let baseClasses = 'max-w-sm text-sm px-4 py-3 rounded-lg shadow-lg flex items-center space-x-3';
+            if (type === 'error') {
+                toastInnerEl.className = baseClasses + ' bg-red-600 text-white';
+            } else {
+                toastInnerEl.className = baseClasses + ' bg-gray-900 text-white';
+            }
+
+            toastEl.classList.remove('hidden');
+            toastTimer = setTimeout(() => {
+                toastEl.classList.add('hidden');
+            }, 4000);
+        }
+
+        async function fetchProducts(query) {
+            if (query.length < 2) {
+                activeIndex = -1;
+                currentSuggestions = [];
+                resultsDiv.innerHTML = '';
+                searchInput.setAttribute('aria-expanded', 'false');
+                return;
+            }
+
+            // Abort any in-flight request
+            if (currentController) {
+                currentController.abort();
+            }
+            currentController = new AbortController();
+
+            setLoading();
+            try {
+                const url = `/api/search/suggest/?q=${encodeURIComponent(query)}`;
+                const response = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: currentController.signal });
+                if (!response.ok) {
+                    throw new Error(`Network error: ${response.status}`);
+                }
+                const data = await response.json();
+                const results = Array.isArray(data.results) ? data.results : [];
+                displaySuggestions(results);
+            } catch (error) {
+                if (error.name === 'AbortError') return; // ignore aborted
+                console.error('Error loading products:', error);
+                resultsDiv.innerHTML = '<p class="text-center text-red-500 p-4">Error loading product data.</p>';
+                searchInput.setAttribute('aria-expanded', 'false');
+                showToast('Unable to load products. Please try again.');
+            }
+        }
+
+        searchInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            const query = searchInput.value.trim();
+            debounceTimer = setTimeout(() => {
+                fetchProducts(query);
+            }, 250);
+        });
+
+        searchInput.addEventListener('keydown', (e) => {
+            if (!currentSuggestions.length) return;
+            const maxIndex = currentSuggestions.length - 1;
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                activeIndex = activeIndex < maxIndex ? activeIndex + 1 : 0;
+                updateActiveItem();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                activeIndex = activeIndex > 0 ? activeIndex - 1 : maxIndex;
+                updateActiveItem();
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (activeIndex >= 0 && activeIndex <= maxIndex) {
+                    navigateToProduct(currentSuggestions[activeIndex]);
+                } else if (currentSuggestions.length > 0) {
+                    navigateToProduct(currentSuggestions[0]);
+                }
+            } else if (e.key === 'Escape') {
+                resultsDiv.innerHTML = '';
+                activeIndex = -1;
+            }
+        });
+
+        function updateActiveItem() {
+            const items = resultsDiv.querySelectorAll('li[data-index]');
+            items.forEach((el, idx) => {
+                if (idx === activeIndex) {
+                    el.classList.add('bg-gray-50');
+                    el.setAttribute('aria-selected', 'true');
+                    el.scrollIntoView({ block: 'nearest' });
+                } else {
+                    el.classList.remove('bg-gray-50');
+                    el.removeAttribute('aria-selected');
+                }
+            });
+        }
+
+        function displaySuggestions(suggestions) {
+            currentSuggestions = suggestions || [];
+            activeIndex = -1;
+            resultsDiv.innerHTML = '';
+
+            if (currentSuggestions.length === 0) {
+                resultsDiv.innerHTML = '<div class="p-4 text-center text-gray-500">No suggestions found.</div>';
+                searchInput.setAttribute('aria-expanded', 'false');
+                return;
+            }
+
+            const suggestionList = document.createElement('ul');
+            suggestionList.id = 'search-results';
+            suggestionList.className = 'shadow-xl overflow-hidden grid grid-cols-1 gap-px bg-gray-100';
+
+            currentSuggestions.forEach((product, idx) => {
+                const li = document.createElement('li');
+                li.className = 'px-4 py-3 bg-white hover:bg-gray-50 cursor-pointer flex items-center transition-colors duration-150';
+                li.setAttribute('data-index', String(idx));
+                li.setAttribute('role', 'option');
+                
+                const productImage = document.createElement('img');
+                const rawImg = product.image || product.product_image_1 || product.product_image || product.image_url || '';
+                const absImg = toAbsoluteUrl(rawImg);
+                productImage.src = absImg || '/media/placeholder.png';
+                productImage.alt = product.title || product.product_title || product.name || '';
+                productImage.className = 'w-10 h-10 object-cover rounded mr-3';
+                productImage.loading = 'lazy';
+
+                const productInfo = document.createElement('div');
+                const productName = document.createElement('span');
+                productName.className = 'font-medium text-gray-800';
+                productName.textContent = product.title || product.product_title || product.name || '';
+                
+                const metaLine = document.createElement('span');
+                metaLine.className = 'text-xs text-gray-500 ml-2';
+                if (product.country) {
+                    metaLine.textContent = product.country;
+                } else if (product.organization) {
+                    metaLine.textContent = `by ${product.organization}`;
+                } else {
+                    metaLine.textContent = '';
+                }
+                
+                productInfo.appendChild(productName);
+                productInfo.appendChild(metaLine);
+
+                li.appendChild(productImage);
+                li.appendChild(productInfo);
+
+                li.addEventListener('mouseenter', () => {
+                    activeIndex = idx;
+                    updateActiveItem();
+                    prefetchProductDetail(product);
+                });
+
+                li.addEventListener('click', () => navigateToProduct(product));
+                suggestionList.appendChild(li);
+            });
+
+            resultsDiv.appendChild(suggestionList);
+            searchInput.setAttribute('aria-expanded', 'true');
+        }
+
+        const prefetchLinks = new Set();
+
+        function prefetchProductDetail(product) {
+            const id = (product.id || product.product_id || '').toString().trim();
+            const slug = (product.slug || '').toString().trim();
+            const identifier = id || slug;
+            if (!identifier) return;
+            const href = `/product/${encodeURIComponent(identifier)}/`;
+            if (prefetchLinks.has(href)) return;
+            prefetchLinks.add(href);
+            const link = document.createElement('link');
+            link.rel = 'prefetch';
+            link.href = href;
+            document.head.appendChild(link);
+        }
+
+        function navigateToProduct(product) {
+            const id = (product.id || product.product_id || '').toString().trim();
+            const slug = (product.slug || '').toString().trim();
+            const identifier = id || slug;
+            if (identifier) {
+                window.location.href = `/product/${encodeURIComponent(identifier)}/`;
+            } else {
+                showToast('Unable to open product details. Missing product identifier.');
+            }
+        }
+
+        // Close suggestions when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!searchInput.contains(event.target) && !resultsDiv.contains(event.target)) {
+                resultsDiv.innerHTML = '';
+                activeIndex = -1;
+                searchInput.setAttribute('aria-expanded', 'false');
+            }
+        });
+    </script>
+
+    <!-- Lead Popup -->
+    <div id="lead-popup" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-auto transform transition-all duration-300 ease-in-out scale-95 opacity-0" id="lead-popup-content">
+            <div class="p-6 md:p-8">
+                <div class="flex justify-end">
+                     <button onclick="closeLeadPopup()" class="text-gray-400 hover:text-gray-600">
+                        <span class="sr-only">Close</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="text-left max-w-xs mx-auto mt-[-1.5rem]">
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-900">Have a question?</h2>
+                    <p class="mt-2 text-sm text-gray-500">Contact us today to see how we can help you find the right solution for your financial needs.</p>
+                </div>
+
+                <form class="mt-6 space-y-4 max-w-xs mx-auto">
+                    <div>
+                        <input type="text" name="business-category" id="business-category" class="w-full px-4 py-3 text-sm text-gray-700 placeholder-gray-500 bg-gray-100 border-2 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent" placeholder="Enter your Business Category">
+                    </div>
+                    <div>
+                        <input type="tel" name="mobile-number" id="mobile-number" class="w-full px-4 py-3 text-sm text-gray-700 placeholder-gray-500 bg-gray-100 border-2 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent" placeholder="Enter your Mobile Number">
+                    </div>
+                </form>
+
+                <div class="mt-6 flex justify-end max-w-xs mx-auto">
+                    <button type="button" onclick="submitLead()" class="inline-flex items-center gap-x-2 rounded-full bg-black px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black transition-all duration-300">
+                        <span class="flex h-6 w-6 items-center justify-center rounded-full bg-white">
+                            <svg class="h-4 w-4 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                            </svg>
+                        </span>
+                        Get in touch
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function openLeadPopup() {
+            const popup = document.getElementById('lead-popup');
+            const popupContent = document.getElementById('lead-popup-content');
+            popup.classList.remove('hidden');
+            setTimeout(() => {
+                popupContent.classList.remove('scale-95', 'opacity-0');
+            }, 50);
+        }
+
+        function closeLeadPopup() {
+            const popup = document.getElementById('lead-popup');
+            const popupContent = document.getElementById('lead-popup-content');
+            popupContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                popup.classList.add('hidden');
+            }, 300);
+        }
+
+        function submitLead() {
+            // Handle form submission logic here
+            // For example, you can get the values:
+            // const category = document.getElementById('business-category').value;
+            // const mobile = document.getElementById('mobile-number').value;
+            // console.log('Submitting lead:', { category, mobile });
+            
+            // After submission, you might want to close the popup
+            closeLeadPopup();
+        }
+    </script>
+
+</body>
+</html> 

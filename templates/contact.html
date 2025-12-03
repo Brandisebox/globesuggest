@@ -1,0 +1,692 @@
+{% extends "base.html" %}
+{% block desktop_content %}
+<style>
+  /* Styles for active FAQ category */
+  .faq-category.active {
+    background-color: #f9fafb;
+    border-color: #6b7280;
+    font-weight: 600;
+  }
+</style>
+<div class="flex flex-col justify-center items-center mx-4 md:mx-8 lg:mx-14 bg-[rgba(250, 250, 250, 1)] rounded-[40px] px-4 py-12 md:py-16">
+  <div class="max-w-6xl mx-0 lg:mx-[80px]">
+    <!-- Badge -->
+    <div class="inline-flex items-center px-3 py-1 rounded-full bg-white shadow-lg mb-8">
+      <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"></path>
+      </svg>
+      <span class="text-sm font-medium uppercase">CONTACT PAGE</span>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 xl:gap-[10rem]">
+      <!-- Left Side - Get In Touch Section -->
+      <div>
+        <h1 class="text-3xl sm:text-[3rem] font-bold mb-6 leading-[3rem]">
+          Get In Touch
+          <br/>
+          With Us <span class="text-gray-400 text-3xl sm:text-[3rem] font-bold">Today!</span>
+        </h1>
+        <p class="text-lg text-gray-600 max-w-2xl mb-12">
+          Got a question? Need a quick demo? Or just wanna say hi before you go all-in?
+          We're always open for meaningful convos (except spam, our AI blocks that too).
+        </p>
+
+        <!-- Contact Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-2 gap-6">
+          <!-- Message Us -->
+          <div class="bg-gradient-to-br from-gray-900 to-black text-white rounded-3xl p-6 relative overflow-hidden">
+            <div class="flex justify-between items-start mb-4">
+              <div class="p-3 bg-gray-800 rounded-full">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+              </div>
+              <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold mb-2">Email Us</h3>
+            <p class="text-gray-400 mb-4">We usually reply within a few hours, unless we're in the zone</p>
+            <a href="mailto:hello@globesuggest.com" class="bg-white text-center justify-center text-black py-2 px-4 rounded-xl inline-flex items-center w-full hover:bg-gray-100 transition-colors">
+              <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              <span class="text-sm">hello@globesuggest.com</span>
+            </a>
+            <div class="absolute inset-0 bg-gradient-to-br from-transparent to-gray-900 opacity-40 pointer-events-none"></div>
+          </div>
+
+          <!-- Call Us -->
+          <div class="bg-gradient-to-br from-gray-900 to-black text-white rounded-3xl p-6 relative overflow-hidden">
+            <div class="flex justify-between items-start mb-4">
+              <div class="p-3 bg-gray-800 rounded-full">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+              </div>
+              <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold mb-2">Call Us</h3>
+            <p class="text-gray-400 mb-4">Available Mon–Sat, 10AM–7PM IST</p>
+            <br>
+            <a href="tel:+918860160101" class="bg-white text-black py-2 px-4 rounded-xl inline-flex items-center w-full hover:bg-gray-100 transition-colors">
+              <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+              <span class="text-sm">+91 88 601 601 01</span>
+            </a>
+            <div class="absolute inset-0 bg-gradient-to-br from-transparent to-gray-900 opacity-40 pointer-events-none"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side - Contact Form -->
+      <div class="p-6 rounded-3xl shadow-lg mb-24">
+        <div class="text-left">
+          <div class="inline-flex items-center px-3 py-1 rounded-full bg-white shadow-lg mb-8">
+            <span class="text-sm font-medium">globesuggest, Contact Form</span>
+          </div>
+          
+          <h2 class="text-2xl font-md mb-6">
+            Feel free to send our<br/>
+            friendly team a message
+          </h2>
+        </div>
+        <!-- Form container with success message that will be initially hidden -->
+        <div id="contactFormContainer">
+          <form id="contactForm" method="post">
+            {% csrf_token %}
+            <!-- Hidden field to detect form submit method -->
+            <input type="hidden" name="submit_method" value="direct">
+            <div class="mb-3 grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Your Name <span class="text-gray-400">*</span></label>
+                <input type="text" name="name" placeholder="John Smith" class="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-200 text-xs placeholder:text-sm" required>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Mobile Number <span class="text-gray-400">*</span></label>
+                <input type="text" name="phone" placeholder="Your mobile number" class="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-200 text-xs placeholder:text-sm" required>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Email <span class="text-gray-400">*</span></label>
+              <input type="email" name="email" placeholder="Enter Your Email" class="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-200 text-xs placeholder:text-sm" required>
+            </div>
+            
+            <div class="mb-3">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Message <span class="text-gray-400">*</span></label>
+              <textarea rows="3" name="message" placeholder="How Can We Help?" class="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-200 text-xs placeholder:text-sm" required></textarea>
+            </div>
+            
+            <button type="button" id="desktopContactSubmitBtn" class="w-full bg-gray-900 text-white font-medium py-3 px-6 rounded-xl hover:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 shadow-lg">
+              Send Message
+            </button>
+          </form>
+        </div>
+
+        <!-- Thank you message (initially hidden) -->
+        <div id="thankYouMessage" class="hidden" style="display: none;">
+          <div class="bg-green-50 border border-green-200 rounded-xl p-4 mb-4">
+            <div class="flex">
+              <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              <p class="text-green-700 font-medium">Thank You! We will contact you soon.</p>
+            </div>
+          </div>
+          <button onclick="resetContactForm()" class="text-sm text-gray-500 underline hover:text-gray-700 mt-2">Send another message</button>
+        </div>
+      </div>
+    </div>
+    <!-- FAQ Section -->
+    <!-- Address Section -->
+    <div class="bg-white rounded-3xl p-6 my-8 shadow-lg">
+      <!-- Badge -->
+      <div class="flex justify-center mb-6">
+        <div class="inline-flex items-center px-3 py-1 rounded-full bg-white border border-gray-200 shadow-sm">
+          <span class="text-sm font-medium uppercase">Our Office</span>
+        </div>
+      </div>
+
+      <!-- Heading -->
+      <div class="text-center mb-6">
+        <h2 class="text-4xl font-bold">Visit Our Location</h2>
+      </div>
+
+      <!-- Subtext -->
+      <p class="text-gray-600 mb-12 max-w-3xl mx-auto text-center">
+        Feel free to drop by our office during business hours.<br>We'd love to meet you in person and discuss how we can help.
+      </p>
+
+      <!-- Address Cards -->
+      <div class="grid md:grid-cols-4 gap-8 max-w-5xl mx-auto">
+        <!-- Head Office -->
+        <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="p-3 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg shadow-sm">
+              <svg class="w-6 h-6 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <h3 class="text-medium font-semibold text-gray-800">Bangalore</h3>
+          </div>
+          <div class="space-y-4">
+            <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+              <p class=" text-xs text-gray-700">149/2, New Thippasandra post, SK Complex, 5th Main, Malleshpalya Road, CV Raman Nagar, Bangalore, Karnataka, 560075</p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="p-3 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg shadow-sm">
+              <svg class="w-6 h-6 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <h3 class="text-medium font-semibold text-gray-800">Delhi</h3>
+          </div>
+          <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+            <p class="text-xs text-gray-700">WZ55C, Plot No. 2, Sri Nagar, Shakur Basti, Pitampura, Delhi, 110034</p>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="p-3 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg shadow-sm">
+              <svg class="w-6 h-6 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <h3 class="text-medium font-semibold text-gray-800">Kolkata</h3>
+          </div>
+          <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+            <p class="text-xs text-gray-700">158/B, Suit Desk No. A-116, Behind RBC College, 24 Parganas Road, Kolkata, West Bengal, 743165</p>
+          </div>
+        </div>
+
+        <!-- Business Hours -->
+        <div class="bg-black rounded-xl p-6 border border-gray-100 shadow-sm">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="p-3 bg-gray-50 rounded-lg">
+              <svg class="w-6 h-6 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 class="text-sm text-white font-semibold">Business Hours</h3>
+          </div>
+          <div class="space-y-2 text-white">
+            <p class="text-xs">Monday - Friday: 9:00 AM - 6:00 PM</p>
+            <p class="text-xs">Saturday: 10:00 AM - 2:00 PM</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decorative squares in corner -->
+    <div class="absolute top-40 right-12 opacity-10">
+      <div class="grid grid-cols-3 gap-2">
+        <div class="w-8 h-8 border-2 border-gray-300 rounded-lg"></div>
+        <div class="w-8 h-8 border-2 border-gray-300 rounded-lg"></div>
+        <div class="w-8 h-8 border-2 border-gray-300 rounded-lg"></div>
+        <div class="w-8 h-8 border-2 border-gray-300 rounded-lg"></div>
+        <div class="w-8 h-8 border-2 border-gray-300 rounded-lg"></div>
+        <div class="w-8 h-8 border-2 border-gray-300 rounded-lg"></div>
+        <div class="w-8 h-8 border-2 border-gray-300 rounded-lg"></div>
+        <div class="w-8 h-8 border-2 border-gray-300 rounded-lg"></div>
+        <div class="w-8 h-8 border-2 border-gray-300 rounded-lg"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block mobile_content %}
+<style>
+  /* Styles for active FAQ category */
+  .faq-category.active {
+    background-color: #f9fafb;
+    border-color: #6b7280;
+    font-weight: 600;
+  }
+</style>
+<div class="flex flex-col justify-center items-center mx-4 md:mx-8 lg:mx-14 bg-[rgba(250, 250, 250, 1)] rounded-[40px] px-4 py-12 md:py-16 mt-16">
+  <div class="max-w-6xl mx-0 lg:mx-[80px]">
+    <!-- Badge -->
+    <div class="inline-flex items-center px-3 py-1 rounded-full bg-white shadow-lg mb-8">
+      <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"></path>
+      </svg>
+      <span class="text-sm font-medium uppercase">CONTACT PAGE</span>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 xl:gap-[10rem]">
+      <!-- Left Side - Get In Touch Section -->
+      <div>
+        <h1 class="text-3xl sm:text-[2.5rem] md:text-[3rem] font-bold mb-6 leading-[2.6rem]">
+          Get In Touch
+          <br/>
+          With Us <span class="text-gray-400 text-3xl sm:text-[2.5rem] md:text-[3rem] font-bold">Today!</span>
+        </h1>
+        <p class="text-base sm:text-lg text-gray-600 max-w-2xl mb-12">
+          Got a question? Need a quick demo? Or just wanna say hi before you go all-in?
+          We're always open for meaningful convos (except spam, our AI blocks that too).
+        </p>
+
+        <!-- Contact Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+          <!-- Message Us -->
+          <div class="bg-gradient-to-br from-gray-900 to-black text-white rounded-3xl p-4 sm:p-6 relative overflow-hidden">
+            <div class="flex justify-between items-start mb-3 sm:mb-4">
+              <div class="p-2 sm:p-3 bg-gray-800 rounded-full">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+              </div>
+              <svg class="w-4 h-4 sm:w-5 sm:h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </div>
+            <h3 class="text-lg sm:text-xl font-semibold mb-1">Email Us</h3>
+            <p class="text-gray-400 mb-2 sm:mb-4 text-xs sm:text-sm">We usually reply within a few hours, unless we're in the zone</p>
+            <a href="mailto:hello@globesuggest.com" class="bg-white text-center justify-center text-black py-2 px-3 sm:px-4 rounded-xl inline-flex items-center w-full hover:bg-gray-100 transition-colors">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              <span class="text-xs sm:text-sm">hello@globesuggest.com</span>
+            </a>
+            <div class="absolute inset-0 bg-gradient-to-br from-transparent to-gray-900 opacity-40 pointer-events-none"></div>
+          </div>
+
+          <!-- Call Us -->
+          <div class="bg-gradient-to-br from-gray-900 to-black text-white rounded-3xl p-4 sm:p-6 relative overflow-hidden">
+            <div class="flex justify-between items-start mb-3 sm:mb-4">
+              <div class="p-2 sm:p-3 bg-gray-800 rounded-full">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+              </div>
+              <svg class="w-4 h-4 sm:w-5 sm:h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </div>
+            <h3 class="text-lg sm:text-xl font-semibold mb-2">Call Us</h3>
+            <p class="text-gray-400 mb-2 sm:mb-4 text-xs sm:text-sm">Available Mon–Sat, 10AM–7PM IST</p>
+            <a href="tel:+918860160101" class="bg-white text-black py-2 px-3 sm:px-4 rounded-xl inline-flex items-center w-full hover:bg-gray-100 transition-colors">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+              <span class="text-xs sm:text-sm">+91 88 601 601 01</span>
+            </a>
+            <div class="absolute inset-0 bg-gradient-to-br from-transparent to-gray-900 opacity-40 pointer-events-none"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side - Contact Form -->
+      <div class="p-4 sm:p-6 rounded-3xl shadow-lg mb-16 sm:mb-24 bg-white">
+        <div class="text-left">
+          <div class="inline-flex items-center px-3 py-1 rounded-full bg-white shadow-lg mb-6 sm:mb-8">
+            <span class="text-sm font-medium">globesuggest, Contact Form</span>
+          </div>
+
+          <h2 class="text-xl sm:text-2xl font-medium mb-4 sm:mb-6">
+            Feel free to send our<br/>
+            friendly team a message
+          </h2>
+        </div>
+        <!-- Form container with success message that will be initially hidden -->
+        <div id="mobileContactFormContainer">
+          <form id="mobileContactForm" method="post">
+            {% csrf_token %}
+            <!-- Hidden field to detect form submit method -->
+            <input type="hidden" name="submit_method" value="direct">
+            <div class="mb-3 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Your Name <span class="text-gray-400">*</span></label>
+                <input type="text" name="name" placeholder="John Smith" class="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-200 text-xs sm:text-sm placeholder:text-sm" required>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Mobile Number <span class="text-gray-400">*</span></label>
+                <input type="text" name="phone" placeholder="Your mobile number" class="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-200 text-xs sm:text-sm placeholder:text-sm" required>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Email <span class="text-gray-400">*</span></label>
+              <input type="email" name="email" placeholder="Enter Your Email" class="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-200 text-xs sm:text-sm placeholder:text-sm" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Message <span class="text-gray-400">*</span></label>
+              <textarea rows="3" name="message" placeholder="How Can We Help?" class="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-200 text-xs sm:text-sm placeholder:text-sm" required></textarea>
+            </div>
+
+            <button type="button" id="mobileContactSubmitBtn" class="w-full bg-gray-900 text-white font-medium py-3 px-6 rounded-xl hover:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 shadow-lg">
+              Send Message
+            </button>
+          </form>
+        </div>
+
+        <!-- Thank you message (initially hidden) -->
+        <div id="mobileThankYouMessage" class="hidden" style="display: none;">
+          <div class="bg-green-50 border border-green-200 rounded-xl p-4 mb-4">
+            <div class="flex">
+              <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              <p class="text-green-700 font-medium text-sm">Thank You! We will contact you soon.</p>
+            </div>
+          </div>
+          <button onclick="resetMobileContactForm()" class="text-sm text-gray-500 underline hover:text-gray-700 mt-2">Send another message</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Address Section -->
+    <div class="bg-white rounded-3xl p-4 sm:p-6 my-8 shadow-lg">
+      <!-- Badge -->
+      <div class="flex justify-center mb-4 sm:mb-6">
+        <div class="inline-flex items-center px-3 py-1 rounded-full bg-white border border-gray-200 shadow-sm">
+          <span class="text-sm font-medium uppercase">Our Office</span>
+        </div>
+      </div>
+
+      <!-- Heading -->
+      <div class="text-center mb-4 sm:mb-6">
+        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold">Visit Our Location</h2>
+      </div>
+
+      <!-- Subtext -->
+      <p class="text-gray-600 mb-8 sm:mb-12 max-w-3xl mx-auto text-center text-sm sm:text-base">
+        Feel free to drop by our office during business hours.<br>We'd love to meet you in person and discuss how we can help.
+      </p>
+
+      <!-- Address Cards -->
+      <div class="grid md:grid-cols-4 gap-4 sm:gap-8 max-w-5xl mx-auto">
+        <!-- Head Office -->
+        <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
+          <div class="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg shadow-sm">
+              <svg class="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <h3 class="text-sm sm:text-base font-semibold text-gray-800">Bangalore</h3>
+          </div>
+          <div class="space-y-4">
+            <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+              <p class="text-xs sm:text-sm text-gray-700">149/2, New Thippasandra post, SK Complex, 5th Main, Malleshpalya Road, CV Raman Nagar, Bangalore, Karnataka, 560075</p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl p-4 sm:p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
+          <div class="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg shadow-sm">
+              <svg class="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <h3 class="text-sm sm:text-base font-semibold text-gray-800">Delhi</h3>
+          </div>
+          <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+            <p class="text-xs sm:text-sm text-gray-700">WZ55C, Plot No. 2, Sri Nagar, Shakur Basti, Pitampura, Delhi, 110034</p>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl p-4 sm:p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
+          <div class="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg shadow-sm">
+              <svg class="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <h3 class="text-sm sm:text-base font-semibold text-gray-800">Kolkata</h3>
+          </div>
+          <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+            <p class="text-xs sm:text-sm text-gray-700">158/B, Suit Desk No. A-116, Behind RBC College, 24 Parganas Road, Kolkata, West Bengal, 743165</p>
+          </div>
+        </div>
+
+        <!-- Business Hours -->
+        <div class="bg-black rounded-xl p-4 sm:p-6 border border-gray-100 shadow-sm md:col-span-1">
+          <div class="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+            <div class="p-2 sm:p-3 bg-gray-50 rounded-lg">
+              <svg class="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 class="text-xs sm:text-sm text-white font-semibold">Business Hours</h3>
+          </div>
+          <div class="space-y-1 sm:space-y-2 text-white">
+            <p class="text-[11px] sm:text-xs">Monday - Friday: 9:00 AM - 6:00 PM</p>
+            <p class="text-[11px] sm:text-xs">Saturday: 10:00 AM - 2:00 PM</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decorative squares in corner -->
+    <div class="absolute top-40 right-6 sm:right-12 opacity-10 pointer-events-none">
+      <div class="grid grid-cols-3 gap-2">
+        <div class="w-6 h-6 sm:w-8 sm:h-8 border-2 border-gray-300 rounded-lg"></div>
+        <div class="w-6 h-6 sm:w-8 sm:h-8 border-2 border-gray-300 rounded-lg"></div>
+        <div class="w-6 h-6 sm:w-8 sm:h-8 border-2 border-gray-300 rounded-lg"></div>
+        <div class="w-6 h-6 sm:w-8 sm:h-8 border-2 border-gray-300 rounded-lg"></div>
+        <div class="w-6 h-6 sm:w-8 sm:h-8 border-2 border-gray-300 rounded-lg"></div>
+        <div class="w-6 h-6 sm:w-8 sm:h-8 border-2 border-gray-300 rounded-lg"></div>
+        <div class="w-6 h-6 sm:w-8 sm:h-8 border-2 border-gray-300 rounded-lg"></div>
+        <div class="w-6 h-6 sm:w-8 sm:h-8 border-2 border-gray-300 rounded-lg"></div>
+        <div class="w-6 h-6 sm:w-8 sm:h-8 border-2 border-gray-300 rounded-lg"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Show thank you message function for reuse
+    function showThankYouMessage() {
+      console.log("Showing thank you message...");
+      console.log("Form container exists:", $("#contactFormContainer").length > 0);
+      console.log("Thank you message exists:", $("#thankYouMessage").length > 0);
+      
+      // Show thank you message
+      $("#contactFormContainer").addClass('hidden');
+      $("#thankYouMessage").removeClass('hidden');
+      $("#thankYouMessage").css('display', 'block');
+      
+      // Force display style to ensure visibility
+      document.getElementById('thankYouMessage').style.display = 'block';
+      
+      console.log("Thank you message shown - desktop template");
+      console.log("Thank you message display style:", $("#thankYouMessage").css('display'));
+      console.log("Thank you message visibility:", $("#thankYouMessage").is(":visible"));
+    }
+    
+    // Show mobile thank you message function
+    function showMobileThankYouMessage() {
+      console.log("Showing mobile thank you message...");
+      console.log("Mobile form container exists:", $("#mobileContactFormContainer").length > 0);
+      console.log("Mobile thank you message exists:", $("#mobileThankYouMessage").length > 0);
+      
+      // Show thank you message
+      $("#mobileContactFormContainer").addClass('hidden');
+      $("#mobileThankYouMessage").removeClass('hidden');
+      $("#mobileThankYouMessage").css('display', 'block');
+      
+      // Force display style to ensure visibility
+      document.getElementById('mobileThankYouMessage').style.display = 'block';
+      
+      console.log("Mobile thank you message shown");
+      console.log("Mobile thank you message display style:", $("#mobileThankYouMessage").css('display'));
+      console.log("Mobile thank you message visibility:", $("#mobileThankYouMessage").is(":visible"));
+    }
+    
+    // Check if we're coming back from a successful form submission
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === 'true') {
+      showThankYouMessage();
+      if ($("#mobileContactFormContainer").length) {
+        showMobileThankYouMessage();
+      }
+    }
+    
+    // Contact form submission
+    $("#desktopContactSubmitBtn").click(function() {
+      // Get form data
+      const formData = new FormData($("#contactForm")[0]);
+      
+      // Store form data for confirmation
+      const name = formData.get('name');
+      const email = formData.get('email');
+      const phone = formData.get('phone');
+      
+      // Debug form data
+      console.log("Submitting form data:", 
+        {name: name, email: email, phone: phone, message: formData.get('message')});
+      
+      // Show loading state on button
+      const submitButton = $(this);
+      const originalButtonText = submitButton.html();
+      submitButton.html('<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Sending...');
+      submitButton.prop('disabled', true);
+      
+      // Get CSRF token 
+      const csrfToken = $("#contactForm").find('[name=csrfmiddlewaretoken]').val();
+      
+      // Use fetch with POST (simplified)
+      $.ajax({
+        url: '/api/contact/',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRFToken': csrfToken
+        },
+        success: function(data) {
+          console.log("Success:", data);
+          
+          // Display thank you message
+          showThankYouMessage();
+          
+          // Reset form for future use
+          $("#contactForm")[0].reset();
+        },
+        error: function(xhr, status, error) {
+          console.error('Error:', error);
+          // Show alert with error message
+          let errorMessage = 'There was an error sending your message. Please try again later.';
+          if (xhr.responseJSON && xhr.responseJSON.message) {
+            errorMessage = xhr.responseJSON.message;
+          }
+          alert(errorMessage);
+        },
+        complete: function() {
+          // Reset button state
+          submitButton.html(originalButtonText);
+          submitButton.prop('disabled', false);
+        }
+      });
+    });
+    
+    // Mobile Contact form submission
+    $("#mobileContactSubmitBtn").click(function() {
+      // Get form data
+      const formData = new FormData($("#mobileContactForm")[0]);
+      
+      // Debug form data
+      console.log("Submitting mobile form data:", 
+        {name: formData.get('name'), email: formData.get('email'), phone: formData.get('phone')});
+      
+      // Show loading state on button
+      const submitButton = $(this);
+      const originalButtonText = submitButton.html();
+      submitButton.html('<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Sending...');
+      submitButton.prop('disabled', true);
+      
+      // Get CSRF token 
+      const csrfToken = $("#mobileContactForm").find('[name=csrfmiddlewaretoken]').val();
+      
+      // Use fetch with POST
+      $.ajax({
+        url: '/api/contact/',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRFToken': csrfToken
+        },
+        success: function(data) {
+          // Display thank you message
+          showMobileThankYouMessage();
+          
+          // Reset form for future use
+          $("#mobileContactForm")[0].reset();
+        },
+        error: function(xhr, status, error) {
+          console.error('Error:', error);
+          let errorMessage = 'There was an error sending your message. Please try again later.';
+          if (xhr.responseJSON && xhr.responseJSON.message) {
+            errorMessage = xhr.responseJSON.message;
+          }
+          alert(errorMessage);
+        },
+        complete: function() {
+          // Reset button state
+          submitButton.html(originalButtonText);
+          submitButton.prop('disabled', false);
+        }
+      });
+    });
+    
+    // Reset contact form function 
+    window.resetContactForm = function() {
+      $("#thankYouMessage").addClass('hidden');
+      $("#thankYouMessage").css('display', 'none');
+      $("#contactFormContainer").removeClass('hidden');
+      $("#contactForm")[0].reset();
+    };
+    
+    // Reset mobile contact form function
+    window.resetMobileContactForm = function() {
+      $("#mobileThankYouMessage").addClass('hidden');
+      $("#mobileThankYouMessage").css('display', 'none');
+      $("#mobileContactFormContainer").removeClass('hidden');
+      $("#mobileContactForm")[0].reset();
+    };
+    
+    // FAQ functionality
+    // Initialize accordion functionality
+    initAccordion();
+    
+    // Function to initialize accordion functionality
+    function initAccordion() {
+      $('.faq-question').each(function() {
+        // Remove existing event listeners first to prevent duplicates
+        $(this).off('click', questionClickHandler);
+        
+        // Add click event listener
+        $(this).on('click', questionClickHandler);
+      });
+    }
+    
+    function questionClickHandler() {
+      const answer = $(this).next();
+      const arrow = $(this).find('svg');
+      
+      // Toggle answer visibility
+      answer.toggleClass('hidden');
+      
+      // Rotate arrow
+      arrow.toggleClass('rotate-180');
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block desktop_content %}
+<section class="max-w-5xl mx-auto px-6 py-24">
+  <header class="mb-10">
+    <p class="text-xs font-semibold tracking-[0.2em] text-indigo-500 uppercase mb-2">
+      Legal
+    </p>
+    <h1 class="text-4xl font-extrabold text-gray-900 mb-3">
+      {{ policy.name|default:"Terms of Service" }}
+    </h1>
+    <p class="text-sm text-gray-500">
+      Effective from
+      <span class="font-medium text-gray-700">
+        {{ policy.effective_date|date:"F j, Y" }}
+      </span>
+    </p>
+  </header>
+
+  <article
+    class="prose prose-sm md:prose base max-w-none text-gray-800 bg-white rounded-2xl shadow-md border border-gray-100 p-6 md:p-10 leading-relaxed"
+  >
+    {{ policy.policy_content|safe }}
+  </article>
+</section>
+{% endblock %}
+
+{% block mobile_content %}
+<section class="px-4 pt-24 pb-12">
+  <header class="mb-6">
+    <p class="text-[10px] font-semibold tracking-[0.2em] text-indigo-500 uppercase mb-1">
+      Legal
+    </p>
+    <h1 class="text-2xl font-extrabold text-gray-900 mb-2">
+      {{ policy.name|default:"Terms of Service" }}
+    </h1>
+    <p class="text-xs text-gray-500">
+      Effective from
+      <span class="font-medium text-gray-700">
+        {{ policy.effective_date|date:"F j, Y" }}
+      </span>
+    </p>
+  </header>
+
+  <article
+    class="text-sm text-gray-800 bg-white rounded-2xl shadow-md border border-gray-100 p-4 leading-relaxed space-y-3"
+  >
+    {{ policy.policy_content|safe }}
+  </article>
+</section>
+{% endblock %}
+
+

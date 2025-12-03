@@ -1,0 +1,671 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>globesuggest API Tester</title>
+    <meta name="description" content="Advanced API testing dashboard by globesuggest for quickly testing and debugging HTTP endpoints.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="shortcut icon" href="/media/bee_logo.png" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Quicksand", sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 min-h-screen text-slate-100">
+    <!-- Top navigation / brand bar -->
+    <header class="sticky top-0 z-30 border-b border-white/10 bg-slate-950/80 backdrop-blur">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <a href="/" class="flex items-center gap-2 group">
+                    <img src="{% static 'logo/globesuggest_logo.png' %}" alt="globesuggest" class="h-8 w-auto group-hover:scale-105 transition-transform duration-200">
+                    <span class="hidden sm:inline text-xs font-semibold tracking-[0.2em] text-slate-300 uppercase">
+                        API LAB
+                    </span>
+                </a>
+                <span class="inline-flex items-center gap-1 rounded-full border border-emerald-400/40 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold text-emerald-300">
+                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Debug mode
+                </span>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="/" class="hidden sm:inline-flex items-center text-xs font-medium text-slate-300 hover:text-white transition-colors">
+                    <i class="fa-solid fa-arrow-left mr-1 text-[11px]"></i>
+                    Back to Home
+                </a>
+                <button id="menu-toggle" class="inline-flex sm:hidden items-center justify-center h-9 w-9 rounded-full border border-white/10 bg-white/5 text-slate-100 hover:bg-white/10 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="hidden sm:hidden border-t border-white/10 bg-slate-950/95 backdrop-blur px-4 py-2" id="mobile-menu">
+            <div class="max-w-6xl mx-auto flex flex-col gap-1 text-sm">
+                <a href="/" class="py-1.5 text-slate-200 hover:text-white">Home</a>
+                <a href="#documentation" class="py-1.5 text-slate-300 hover:text-white">Documentation</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+        <!-- Hero / intro -->
+        <section class="mb-6 sm:mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-2 rounded-full border border-amber-400/40 bg-amber-500/10 px-3 py-1 text-[11px] font-semibold text-amber-200 mb-3">
+                        <i class="fa-solid fa-flask text-[11px]"></i>
+                        Experimental API playground
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white">
+                        globesuggest API Testing Studio
+                    </h1>
+                    <p class="mt-2 text-sm sm:text-base text-slate-300 max-w-2xl">
+                        Build, inspect and debug any HTTP request in real‑time.
+                        Perfect for quickly exploring <span class="font-semibold text-emerald-300">1Matrix / globesuggest</span> APIs
+                        and third‑party integrations during development.
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2 text-[11px]">
+                    <span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-emerald-200 border border-emerald-400/30">
+                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+                        Live response viewer
+                    </span>
+                    <span class="inline-flex items-center gap-1 rounded-full bg-sky-500/10 px-2.5 py-1 text-sky-200 border border-sky-400/30">
+                        <i class="fa-solid fa-code text-[10px]"></i>
+                        JSON & form body
+                    </span>
+                    <span class="inline-flex items-center gap-1 rounded-full bg-fuchsia-500/10 px-2.5 py-1 text-fuchsia-200 border border-fuchsia-400/30">
+                        <i class="fa-solid fa-clock-rotate-left text-[10px]"></i>
+                        Status & latency
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Two-column layout on desktop: Request builder & Response viewer -->
+        <section class="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+            <!-- Request Builder -->
+            <div class="bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-slate-900/80 rounded-2xl border border-white/10 shadow-[0_18px_60px_rgba(15,23,42,0.8)] overflow-hidden">
+                <div class="px-4 sm:px-5 pt-4 pb-3 border-b border-white/5 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-400/30 text-xs">
+                            <i class="fa-solid fa-terminal"></i>
+                        </span>
+                        <div>
+                            <h2 class="text-sm font-semibold text-slate-50">Request Builder</h2>
+                            <p class="text-[11px] text-slate-400">Craft any HTTP request with headers & body.</p>
+                        </div>
+                    </div>
+                    <span class="hidden sm:inline-flex items-center gap-1 rounded-full bg-white/5 px-2.5 py-1 text-[10px] text-slate-300 border border-white/10">
+                        <i class="fa-solid fa-lightbulb text-yellow-300"></i>
+                        Tip: test your live product search API here
+                    </span>
+                </div>
+
+                <div class="p-4 sm:p-5 space-y-5">
+                    <!-- URL + Method -->
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                            <div class="md:col-span-3">
+                                <label for="endpoint-url" class="block text-xs font-medium text-slate-300 mb-1.5">
+                                    Endpoint URL
+                                </label>
+                                <div class="relative">
+                                    <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[11px] text-slate-400">
+                                        <i class="fa-solid fa-globe"></i>
+                                    </span>
+                                    <input
+                                        type="text"
+                                        id="endpoint-url"
+                                        class="w-full pl-8 pr-3 py-2.5 text-xs sm:text-sm bg-slate-900/70 border border-slate-600/70 rounded-lg text-slate-50 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                        placeholder="https://api.example.com/endpoint"
+                                    >
+                                </div>
+                            </div>
+                            <div>
+                                <label for="http-method" class="block text-xs font-medium text-slate-300 mb-1.5">
+                                    Method
+                                </label>
+                                <div class="relative">
+                                    <select
+                                        id="http-method"
+                                        class="w-full px-3 py-2.5 text-xs sm:text-sm bg-slate-900/70 border border-slate-600/70 rounded-lg text-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    >
+                                        <option value="GET">GET</option>
+                                        <option value="POST">POST</option>
+                                        <option value="PUT">PUT</option>
+                                        <option value="DELETE">DELETE</option>
+                                        <option value="PATCH">PATCH</option>
+                                    </select>
+                                    <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-[10px] text-slate-400">
+                                        <i class="fa-solid fa-chevron-down"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Headers -->
+                    <div class="border-t border-white/5 pt-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-xs font-semibold text-slate-100 uppercase tracking-[0.14em]">
+                                Headers
+                            </h3>
+                            <button
+                                id="add-header"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-emerald-400/40 text-[11px] font-medium text-emerald-200 transition-colors"
+                            >
+                                <i class="fa-solid fa-plus text-[10px]"></i>
+                                Add header
+                            </button>
+                        </div>
+                        <div id="headers-container" class="space-y-2.5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <input
+                                    type="text"
+                                    class="header-key w-full px-3 py-2 text-xs sm:text-sm bg-slate-900/70 border border-slate-600/70 rounded-lg text-slate-50 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    placeholder="Header name (e.g. Authorization)"
+                                >
+                                <input
+                                    type="text"
+                                    class="header-value w-full px-3 py-2 text-xs sm:text-sm bg-slate-900/70 border border-slate-600/70 rounded-lg text-slate-50 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    placeholder="Header value"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="border-t border-white/5 pt-4" id="body-section">
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                            <h3 class="text-xs font-semibold text-slate-100 uppercase tracking-[0.14em]">
+                                Request Body
+                            </h3>
+                            <div class="inline-flex rounded-full bg-slate-900/70 p-0.5 border border-white/10">
+                                <button
+                                    id="body-type-json"
+                                    class="px-3 py-1.5 rounded-full bg-emerald-500 text-[11px] font-semibold text-emerald-950 shadow-sm"
+                                >
+                                    JSON
+                                </button>
+                                <button
+                                    id="body-type-form"
+                                    class="px-3 py-1.5 rounded-full text-[11px] font-medium text-slate-200 hover:text-white"
+                                >
+                                    Form Data
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- JSON body -->
+                        <div id="json-body-container">
+                            <div class="relative">
+                                <textarea
+                                    id="json-body"
+                                    class="w-full h-44 sm:h-52 px-3 py-3 text-xs sm:text-sm bg-slate-950/70 border border-slate-700 rounded-xl text-emerald-100 placeholder:text-slate-600 font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    placeholder='{"key": "value"}'
+                                ></textarea>
+                                <div class="pointer-events-none absolute top-2 right-3 text-[10px] text-slate-500 flex items-center gap-1">
+                                    <span class="h-1 w-1 rounded-full bg-emerald-400"></span>
+                                    JSON
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form body -->
+                        <div id="form-body-container" class="hidden space-y-3">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <input
+                                    type="text"
+                                    class="form-key w-full px-3 py-2 text-xs sm:text-sm bg-slate-900/70 border border-slate-600/70 rounded-lg text-slate-50 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    placeholder="Parameter name"
+                                >
+                                <input
+                                    type="text"
+                                    class="form-value w-full px-3 py-2 text-xs sm:text-sm bg-slate-900/70 border border-slate-600/70 rounded-lg text-slate-50 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    placeholder="Parameter value"
+                                >
+                            </div>
+                            <button
+                                id="add-form-param"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-emerald-400/40 text-[11px] font-medium text-emerald-200 transition-colors"
+                            >
+                                <i class="fa-solid fa-plus text-[10px]"></i>
+                                Add parameter
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Action -->
+                    <div class="flex justify-end pt-1">
+                        <button
+                            id="send-request"
+                            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-sm font-semibold text-emerald-950 shadow-lg shadow-emerald-500/30 transition-all duration-150 hover:shadow-xl hover:-translate-y-0.5"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                            </svg>
+                            Send request
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Response Viewer + Docs -->
+            <div class="space-y-5">
+                <!-- Response -->
+                <div class="bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-slate-900/80 rounded-2xl border border-white/10 shadow-[0_18px_60px_rgba(15,23,42,0.8)] overflow-hidden">
+                    <div class="px-4 sm:px-5 pt-4 pb-3 border-b border-white/5 flex items-center justify-between gap-3">
+                        <div>
+                            <h2 class="text-sm font-semibold text-slate-50">Response</h2>
+                            <p class="text-[11px] text-slate-400">Inspect body, headers, status and timing.</p>
+                        </div>
+                        <div class="flex items-center gap-2 text-[11px]">
+                            <span id="status-code" class="hidden px-2.5 py-1 rounded-full font-semibold"></span>
+                            <span id="response-time" class="hidden text-slate-300"></span>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-white/5">
+                        <div class="bg-slate-950/60 px-4 sm:px-5 py-2.5 border-b border-white/5 flex items-center justify-between">
+                            <div class="flex space-x-2 sm:space-x-3 text-[11px]">
+                                <button
+                                    id="response-tab-body"
+                                    class="px-3 py-1 rounded-full bg-emerald-500 text-emerald-950 font-semibold"
+                                >
+                                    Body
+                                </button>
+                                <button
+                                    id="response-tab-headers"
+                                    class="px-3 py-1 rounded-full text-slate-200 hover:text-white"
+                                >
+                                    Headers
+                                </button>
+                            </div>
+                            <button
+                                id="copy-response"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/20 text-[11px] font-medium text-slate-100 transition-colors"
+                            >
+                                <i class="fa-regular fa-copy text-[10px]"></i>
+                                Copy body
+                            </button>
+                        </div>
+
+                        <div id="response-body-container" class="overflow-auto max-h-96 bg-slate-950/80">
+                            <pre
+                                id="response-body"
+                                class="p-4 text-[11px] sm:text-xs md:text-sm font-mono text-emerald-100 whitespace-pre-wrap"
+                            >No response yet. Send a request to see the results.</pre>
+                        </div>
+                        <div id="response-headers-container" class="hidden overflow-auto max-h-96 bg-slate-950/80">
+                            <pre
+                                id="response-headers"
+                                class="p-4 text-[11px] sm:text-xs md:text-sm font-mono text-slate-200 whitespace-pre-wrap"
+                            >No response headers yet.</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick documentation / presets -->
+                <div id="documentation" class="bg-slate-900/80 rounded-2xl border border-white/10 shadow-[0_12px_40px_rgba(15,23,42,0.7)] overflow-hidden">
+                    <div class="px-4 sm:px-5 py-4 border-b border-white/5 flex items-center justify-between gap-3">
+                        <div>
+                            <h2 class="text-sm font-semibold text-slate-50">Quick endpoints</h2>
+                            <p class="text-[11px] text-slate-400">
+                                One‑click examples for popular globesuggest / 1Matrix APIs.
+                            </p>
+                        </div>
+                        <span class="hidden sm:inline-flex items-center gap-1 rounded-full bg-white/5 px-2.5 py-1 text-[10px] text-slate-300 border border-white/10">
+                            <i class="fa-solid fa-bolt text-amber-300"></i>
+                            Fills URL &amp; method
+                        </span>
+                    </div>
+                    <div class="p-4 sm:p-5 text-[12px] sm:text-sm text-slate-200 space-y-3">
+                        <p class="text-slate-300 text-xs sm:text-sm">
+                            These are example endpoints; you can freely edit them or paste any other URL to debug.
+                        </p>
+                        <div class="space-y-3">
+                            <div class="p-3 sm:p-3.5 rounded-xl bg-slate-950/60 border border-slate-700/70">
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="flex items-center gap-2 text-[11px] sm:text-xs">
+                                        <span class="inline-flex items-center justify-center h-5 w-10 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-400/40 text-[10px] font-semibold">
+                                            GET
+                                        </span>
+                                        <span class="font-semibold text-slate-50">
+                                            Product search
+                                        </span>
+                                    </div>
+                                    <button class="use-example inline-flex items-center gap-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 px-2.5 py-1 text-[11px] text-slate-100 transition-colors">
+                                        Use example
+                                    </button>
+                                </div>
+                                <p class="mt-1 text-[11px] text-emerald-200/90 break-all">
+                                    GET https://1matrix.io/landingx/api/products/search/?q=keyword
+                                </p>
+                            </div>
+
+                            <div class="p-3 sm:p-3.5 rounded-xl bg-slate-950/60 border border-slate-700/70">
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="flex items-center gap-2 text-[11px] sm:text-xs">
+                                        <span class="inline-flex items-center justify-center h-5 w-10 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-400/40 text-[10px] font-semibold">
+                                            GET
+                                        </span>
+                                        <span class="font-semibold text-slate-50">
+                                            Product detail
+                                        </span>
+                                    </div>
+                                    <button class="use-example inline-flex items-center gap-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 px-2.5 py-1 text-[11px] text-slate-100 transition-colors">
+                                        Use example
+                                    </button>
+                                </div>
+                                <p class="mt-1 text-[11px] text-emerald-200/90 break-all">
+                                    GET https://1matrix.io/landingx/api/products/{uuid}/
+                                </p>
+                            </div>
+
+                            <div class="p-3 sm:p-3.5 rounded-xl bg-slate-950/60 border border-slate-700/70">
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="flex items-center gap-2 text-[11px] sm:text-xs">
+                                        <span class="inline-flex items-center justify-center h-5 w-10 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-400/40 text-[10px] font-semibold">
+                                            GET
+                                        </span>
+                                        <span class="font-semibold text-slate-50">
+                                            Vendor profile
+                                        </span>
+                                    </div>
+                                    <button class="use-example inline-flex items-center gap-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 px-2.5 py-1 text-[11px] text-slate-100 transition-colors">
+                                        Use example
+                                    </button>
+                                </div>
+                                <p class="mt-1 text-[11px] text-emerald-200/90 break-all">
+                                    GET https://1matrix.io/landingx/api/vendors/{slug}/
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10 bg-slate-950/95">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-400">
+            <div class="flex items-center gap-2">
+                <img src="/media/bee_logo.png" alt="globesuggest" class="h-4 w-auto">
+                <span>Internal debugging tool · Not visible in production</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="/" class="hover:text-slate-200 transition-colors">Home</a>
+                <span class="hidden sm:inline text-slate-600">·</span>
+                <span class="text-slate-600">&copy; {% now "Y" %} globesuggest.</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Body type toggle
+        document.getElementById('body-type-json').addEventListener('click', function() {
+            document.getElementById('json-body-container').classList.remove('hidden');
+            document.getElementById('form-body-container').classList.add('hidden');
+            document.getElementById('body-type-json').classList.add('bg-emerald-500', 'text-emerald-950');
+            document.getElementById('body-type-form').classList.remove('bg-emerald-500', 'text-emerald-950');
+        });
+
+        document.getElementById('body-type-form').addEventListener('click', function() {
+            document.getElementById('json-body-container').classList.add('hidden');
+            document.getElementById('form-body-container').classList.remove('hidden');
+            document.getElementById('body-type-form').classList.add('bg-emerald-500', 'text-emerald-950');
+            document.getElementById('body-type-json').classList.remove('bg-emerald-500', 'text-emerald-950');
+        });
+
+        // Response tabs toggle
+        document.getElementById('response-tab-body').addEventListener('click', function() {
+            document.getElementById('response-body-container').classList.remove('hidden');
+            document.getElementById('response-headers-container').classList.add('hidden');
+            document.getElementById('response-tab-body').classList.add('bg-emerald-500', 'text-emerald-950');
+            document.getElementById('response-tab-headers').classList.remove('bg-emerald-500', 'text-emerald-950');
+        });
+
+        document.getElementById('response-tab-headers').addEventListener('click', function() {
+            document.getElementById('response-body-container').classList.add('hidden');
+            document.getElementById('response-headers-container').classList.remove('hidden');
+            document.getElementById('response-tab-headers').classList.add('bg-emerald-500', 'text-emerald-950');
+            document.getElementById('response-tab-body').classList.remove('bg-emerald-500', 'text-emerald-950');
+        });
+
+        // Add header button
+        document.getElementById('add-header').addEventListener('click', function() {
+            const headerContainer = document.getElementById('headers-container');
+            const headerRow = document.createElement('div');
+            headerRow.className = 'grid grid-cols-1 md:grid-cols-2 gap-3';
+            headerRow.innerHTML = `
+                <input type="text" class="header-key w-full px-3 py-2 text-xs sm:text-sm bg-slate-900/70 border border-slate-600/70 rounded-lg text-slate-50 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Header name">
+                <div class="flex">
+                    <input type="text" class="header-value w-full px-3 py-2 text-xs sm:text-sm bg-slate-900/70 border border-slate-600/70 rounded-l-lg text-slate-50 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Header value">
+                    <button class="remove-header px-3 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/40 rounded-r-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            headerContainer.appendChild(headerRow);
+
+            // Add event listener to the remove button
+            headerRow.querySelector('.remove-header').addEventListener('click', function() {
+                headerContainer.removeChild(headerRow);
+            });
+        });
+
+        // Add form parameter button
+        document.getElementById('add-form-param').addEventListener('click', function() {
+            const formContainer = document.getElementById('form-body-container');
+            const formRow = document.createElement('div');
+            formRow.className = 'grid grid-cols-1 md:grid-cols-2 gap-3';
+            formRow.innerHTML = `
+                <input type="text" class="form-key w-full px-3 py-2 text-xs sm:text-sm bg-slate-900/70 border border-slate-600/70 rounded-lg text-slate-50 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Parameter name">
+                <div class="flex">
+                    <input type="text" class="form-value w-full px-3 py-2 text-xs sm:text-sm bg-slate-900/70 border border-slate-600/70 rounded-l-lg text-slate-50 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Parameter value">
+                    <button class="remove-param px-3 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/40 rounded-r-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            formContainer.insertBefore(formRow, document.getElementById('add-form-param'));
+
+            // Add event listener to the remove button
+            formRow.querySelector('.remove-param').addEventListener('click', function() {
+                formContainer.removeChild(formRow);
+            });
+        });
+
+        // Copy response button
+        document.getElementById('copy-response').addEventListener('click', function() {
+            const responseBody = document.getElementById('response-body').innerText;
+            navigator.clipboard.writeText(responseBody).then(function() {
+                const copyBtn = document.getElementById('copy-response');
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = `
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Copied!
+                `;
+                setTimeout(function() {
+                    copyBtn.innerHTML = originalText;
+                }, 1400);
+            });
+        });
+
+        // Example buttons
+        document.querySelectorAll('.use-example').forEach(button => {
+            button.addEventListener('click', function() {
+                const exampleUrl = this.parentElement.nextElementSibling.textContent.trim().replace(/^GET\s+/i, '');
+                document.getElementById('endpoint-url').value = exampleUrl;
+                document.getElementById('http-method').value = 'GET';
+            });
+        });
+
+        // Send request button
+        document.getElementById('send-request').addEventListener('click', async function() {
+            const url = document.getElementById('endpoint-url').value;
+            if (!url) {
+                alert('Please enter an endpoint URL');
+                return;
+            }
+
+            const method = document.getElementById('http-method').value;
+            const headers = {};
+            
+            // Get headers
+            document.querySelectorAll('.header-key').forEach((keyInput, index) => {
+                const key = keyInput.value.trim();
+                if (key) {
+                    const valueInput = document.querySelectorAll('.header-value')[index];
+                    headers[key] = valueInput.value.trim();
+                }
+            });
+
+            // Prepare request options
+            const options = {
+                method: method,
+                headers: headers,
+                mode: 'cors', // Enable CORS for cross-origin requests
+                cache: 'no-cache', // Ensure fresh response
+                credentials: 'same-origin', // Include credentials only for same-origin requests
+                redirect: 'follow', // Follow redirects automatically
+                referrerPolicy: 'no-referrer-when-downgrade' // Send referrer for HTTPS to HTTP
+            };
+
+            // Add body if not GET or HEAD
+            if (method !== 'GET' && method !== 'HEAD') {
+                if (!document.getElementById('json-body-container').classList.contains('hidden')) {
+                    // JSON body
+                    try {
+                        const jsonBody = document.getElementById('json-body').value;
+                        if (jsonBody.trim()) {
+                            const parsedJson = JSON.parse(jsonBody); // Validate JSON
+                            options.body = jsonBody;
+                            options.headers['Content-Type'] = 'application/json';
+                        }
+                    } catch (e) {
+                        alert('Invalid JSON in request body: ' + e.message);
+                        return;
+                    }
+                } else {
+                    // Form data
+                    const formData = new FormData();
+                    let hasFormData = false;
+                    
+                    document.querySelectorAll('.form-key').forEach((keyInput, index) => {
+                        const key = keyInput.value.trim();
+                        if (key) {
+                            const valueInput = document.querySelectorAll('.form-value')[index];
+                            formData.append(key, valueInput.value.trim());
+                            hasFormData = true;
+                        }
+                    });
+                    
+                    if (hasFormData) {
+                        options.body = formData;
+                    }
+                }
+            }
+
+            // Update UI to show loading state
+            const sendButton = document.getElementById('send-request');
+            const originalButtonContent = sendButton.innerHTML;
+            sendButton.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-1 h-4 w-4 text-emerald-950" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Sending
+            `;
+            sendButton.disabled = true;
+
+            // Reset response area
+            document.getElementById('response-body').innerText = 'Fetching response...';
+            document.getElementById('response-headers').innerText = '';
+            document.getElementById('status-code').classList.add('hidden');
+            document.getElementById('response-time').classList.add('hidden');
+            
+            const startTime = Date.now();
+            
+            try {
+                const response = await fetch(url, options);
+                const endTime = Date.now();
+                const responseTime = endTime - startTime;
+                
+                // Display status code
+                const statusCode = document.getElementById('status-code');
+                statusCode.innerText = `${response.status} ${response.statusText}`;
+                statusCode.classList.remove('hidden');
+                
+                if (response.ok) {
+                    statusCode.classList.add('bg-emerald-500/10', 'text-emerald-200', 'border', 'border-emerald-400/40');
+                    statusCode.classList.remove('bg-red-500/10', 'text-red-200', 'border-red-400/40');
+                } else {
+                    statusCode.classList.add('bg-red-500/10', 'text-red-200', 'border', 'border-red-400/40');
+                    statusCode.classList.remove('bg-emerald-500/10', 'text-emerald-200', 'border-emerald-400/40');
+                }
+                
+                // Display response time
+                const responseTimeElement = document.getElementById('response-time');
+                responseTimeElement.innerText = `${responseTime}ms`;
+                responseTimeElement.classList.remove('hidden');
+                
+                // Display response headers
+                const headersText = Array.from(response.headers.entries())
+                    .map(([key, value]) => `${key}: ${value}`)
+                    .join('\n');
+                document.getElementById('response-headers').innerText = headersText || 'No headers received';
+                
+                // Display response body
+                try {
+                    const responseText = await response.text();
+                    try {
+                        // Try to parse as JSON for pretty printing
+                        const json = JSON.parse(responseText);
+                        document.getElementById('response-body').innerText = JSON.stringify(json, null, 2);
+                    } catch (e) {
+                        // Not JSON, display as text
+                        document.getElementById('response-body').innerText = responseText || 'Empty response body';
+                    }
+                } catch (e) {
+                    document.getElementById('response-body').innerText = 'Error reading response body: ' + e.message;
+                }
+            } catch (error) {
+                const statusCode = document.getElementById('status-code');
+                statusCode.innerText = 'Network Error';
+                statusCode.classList.remove('hidden', 'bg-emerald-500/10', 'text-emerald-200', 'border-emerald-400/40');
+                statusCode.classList.add('bg-red-500/10', 'text-red-200', 'border', 'border-red-400/40');
+
+                document.getElementById('response-body').innerText = 'An error occurred while sending the request:\n' + error.message;
+                document.getElementById('response-headers').innerText = 'No headers received due to the error.';
+                document.getElementById('response-time').classList.add('hidden');
+            } finally {
+                sendButton.innerHTML = originalButtonContent;
+                sendButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
