@@ -209,6 +209,19 @@ def product_detail(request, product_id: str):
         "id": raw_product.get("id") or raw_product.get("product_id") or product_id,
     }
 
+    # Ensure we always expose a stable product slug for clean URLs.
+    raw_slug = raw_product.get("product_slug") or raw_product.get("slug") or ""
+    if raw_slug:
+        slug = str(raw_slug).strip()
+    else:
+        base_slug = slugify(product["product_title"]) if product["product_title"] else ""
+        pid_for_slug = str(product["product_id"] or product_id).strip()
+        slug = f"{base_slug}-{pid_for_slug}" if base_slug and pid_for_slug else base_slug or pid_for_slug
+
+    if slug:
+        product["slug"] = slug
+        product["product_slug"] = slug
+
     # Normalise FAQ data from API into a template-friendly collection.
     # The upstream payload provides:
     # "faqs": [{"question": "...", "answer": "..."}, ...]
@@ -298,6 +311,19 @@ def blog_detail(request, product_id: str, blog_index: int):
         "product_id": raw_product.get("product_id") or product_id,
         "id": raw_product.get("id") or raw_product.get("product_id") or product_id,
     }
+
+    # Ensure a stable slug is available for URLs and templates.
+    raw_slug = raw_product.get("product_slug") or raw_product.get("slug") or ""
+    if raw_slug:
+        slug = str(raw_slug).strip()
+    else:
+        base_slug = slugify(product["product_title"]) if product["product_title"] else ""
+        pid_for_slug = str(product["product_id"] or product_id).strip()
+        slug = f"{base_slug}-{pid_for_slug}" if base_slug and pid_for_slug else base_slug or pid_for_slug
+
+    if slug:
+        product["slug"] = slug
+        product["product_slug"] = slug
 
     blog_posts = raw_product.get("blog_posts") or []
     # blog_index in the URL is 1-based to match the template loop counter.

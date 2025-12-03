@@ -349,11 +349,11 @@
         const prefetchLinks = new Set();
 
         function prefetchProductDetail(product) {
-            const id = (product.id || product.product_id || '').toString().trim();
             const slug = (product.slug || '').toString().trim();
-            const identifier = id || slug;
+            const id = (product.id || product.product_id || '').toString().trim();
+            const identifier = slug || id;
             if (!identifier) return;
-            const href = `/product/${encodeURIComponent(identifier)}/`;
+            const href = `/${encodeURIComponent(identifier)}/`;
             if (prefetchLinks.has(href)) return;
             prefetchLinks.add(href);
             const link = document.createElement('link');
@@ -363,11 +363,11 @@
         }
 
         function navigateToProduct(product) {
-            const id = (product.id || product.product_id || '').toString().trim();
             const slug = (product.slug || '').toString().trim();
-            const identifier = id || slug;
+            const id = (product.id || product.product_id || '').toString().trim();
+            const identifier = slug || id;
             if (identifier) {
-                window.location.href = `/product/${encodeURIComponent(identifier)}/`;
+                window.location.href = `/${encodeURIComponent(identifier)}/`;
             } else {
                 showToast('Unable to open product details. Missing product identifier.');
             }

@@ -24,15 +24,6 @@ urlpatterns = [
     # Product‑specific enquiry & draft endpoints used by product_detail.html
     path("api/enquiry/draft/", enquiry_draft, name="api_enquiry_draft"),
     path("api/enquiry/submit/", enquiry_submit, name="api_enquiry_submit"),
-    # Use the product UUID (or stable ID) in the URL so we can call the
-    # upstream detail API as /globesuggest/api/products/{uuid}
-    path("product/<slug:product_id>/", product_detail, name="product_detail"),
-    # Blog detail for a specific product blog entry
-    path(
-        "product/<slug:product_id>/blog/<int:blog_index>/",
-        blog_detail,
-        name="blog_detail",
-    ),
     # Legal / policy pages
     path("privacy-policy/", privacy_policy, name="privacy_policy"),
     path("terms-of-service/", terms_of_service, name="terms_of_service"),
@@ -45,3 +36,19 @@ if settings.DEBUG:
     urlpatterns += [
         path("test/", test_api, name="test_api"),
     ]
+
+# Use the product UUID (or stable ID) in a clean, root-level URL so we can call the
+# upstream detail API as /globesuggest/api/products/{uuid} while keeping pretty URLs.
+#
+# Placed after the explicit routes above so that static pages and API endpoints like
+# "/about/", "/contact/", "/api/...", etc. continue to resolve correctly.
+urlpatterns += [
+    # Product detail: "/<product_id>/"
+    path("<slug:product_id>/", product_detail, name="product_detail"),
+    # Blog detail for a specific product blog entry: "/<product_id>/blog/1/"
+    path(
+        "<slug:product_id>/blog/<int:blog_index>/",
+        blog_detail,
+        name="blog_detail",
+    ),
+]
