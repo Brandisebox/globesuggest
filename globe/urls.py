@@ -14,6 +14,7 @@ from .views import (
     contact_view,
     enquiry_draft,
     enquiry_submit,
+    analytics_ingest,
     test_api,
 )
 
@@ -24,6 +25,8 @@ urlpatterns = [
     # Product‑specific enquiry & draft endpoints used by product_detail.html
     path("api/enquiry/draft/", enquiry_draft, name="api_enquiry_draft"),
     path("api/enquiry/submit/", enquiry_submit, name="api_enquiry_submit"),
+    # Local analytics ingest endpoint (frontend also sends encrypted payload to 1matrix.io)
+    path("api/analytics/ingest/", analytics_ingest, name="api_analytics_ingest"),
     # Legal / policy pages
     path("privacy-policy/", privacy_policy, name="privacy_policy"),
     path("terms-of-service/", terms_of_service, name="terms_of_service"),

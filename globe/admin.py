@@ -4,6 +4,9 @@ from django.db import models
 
 from .models import *
 
+admin.site.register(AnalyticsSession)
+admin.site.register(AnalyticsEvent)
+
 class TinyMCEPolicyWidget(forms.Textarea):
     """
     Lightweight TinyMCE widget for policy content using the official CDN.
@@ -105,6 +108,7 @@ class LeadAdmin(admin.ModelAdmin):
         "product_name",
         "product_id",
         "mobile",
+        "email",
         "quantity",
         "frequency",
         "source",
@@ -117,6 +121,7 @@ class LeadAdmin(admin.ModelAdmin):
         "product_id",
         "product_slug",
         "mobile",
+        "email",
         "session_id",
     )
     readonly_fields = ("created_at", "updated_at", "submitted_at", "source_ip", "user_agent")

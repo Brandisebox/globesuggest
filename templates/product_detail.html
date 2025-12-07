@@ -852,12 +852,14 @@
                     <div class="mt-10 flex flex-col gap-4 text-left">
                         {% if product.size_chart %}
                         <a href="{{ product.size_chart }}"
+                            data-cta="size_chart"
                             class="inline-flex items-center justify-center rounded-full bg-gray-200 text-black w-40 h-12 text-sm font-semibold shadow-sm" target="_blank">
                             Size Chart
                         </a>
                         {% endif %}
                         {% if product.product_catalog %}
                         <a href="{{ product.product_catalog }}"
+                            data-cta="download_catalogue"
                             class="inline-flex items-center justify-center rounded-full bg-black text-white w-[13rem] h-12 text-sm font-semibold shadow-sm px-4" target="_blank">
                             Download Catalogue
                         </a>
@@ -1697,6 +1699,94 @@
             </section>
         </div>
 
+        {% if product.badge_lead_time or product.badge_port or product.badge_year_export or product.badge_country or product.badge_region %}
+        <!-- Trade Snapshot / Badges Section -->
+        <section class="bg-white py-10 sm:py-14 border-y border-gray-100" data-section="trade-badges">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-white text-gray-900 border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+                    <div class="px-5 sm:px-8 pt-5 pb-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between justify-start gap-3">
+                        <div>
+                            <p class="text-[11px] sm:text-center uppercase tracking-[0.25em] text-gray-500 font-semibold">
+                                Trade snapshot
+                            </p>
+                            <h2 class="mt-1 text-lg sm:text-xl font-semibold text-gray-900">
+                                Key export readiness indicators
+                            </h2>
+                        </div>
+                        <div class="inline-flex justify-center mx-auto sm:mx-0 items-center gap-2 rounded-full bg-gray-900 text-white px-3 py-1.5 text-[10px] sm:text-xs font-semibold tracking-[0.18em] uppercase">
+                            <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white text-gray-900">
+                                <i class="fas fa-ship text-xs"></i>
+                            </span>
+                            <span>Verified for bulk trade</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 divide-y sm:divide-y-0 sm:divide-x divide-gray-100">
+                        {% if product.badge_lead_time %}
+                        <div class="px-4 py-4 sm:py-5 flex flex-col items-start sm:items-center gap-1">
+                            <span class="text-[10px] sm:text-[11px] uppercase tracking-[0.18em] text-gray-500 font-semibold">
+                                Lead time
+                            </span>
+                            <span class="text-base sm:text-lg font-semibold text-gray-900">
+                                {{ product.badge_lead_time }}<span class="ml-1 text-xs text-gray-500">days</span>
+                            </span>
+                        </div>
+                        {% endif %}
+
+                        {% if product.badge_port %}
+                        <div class="px-4 py-4 sm:py-5 flex flex-col items-start sm:items-center gap-1">
+                            <span class="text-[10px] sm:text-[11px] uppercase tracking-[0.18em] text-gray-500 font-semibold">
+                                Port
+                            </span>
+                            <span class="text-base sm:text-lg font-semibold text-gray-900">
+                                {{ product.badge_port }}
+                            </span>
+                            <span class="text-[11px] text-gray-500">
+                                Primary loading port
+                            </span>
+                        </div>
+                        {% endif %}
+
+                        {% if product.badge_year_export %}
+                        <div class="px-4 py-4 sm:py-5 flex flex-col items-start sm:items-center gap-1">
+                            <span class="text-[10px] sm:text-[11px] uppercase tracking-[0.18em] text-gray-500 font-semibold">
+                                Export since
+                            </span>
+                            <span class="text-base sm:text-lg font-semibold text-gray-900">
+                                {{ product.badge_year_export }}
+                            </span>
+                            <span class="text-[11px] text-gray-500">
+                                First export year
+                            </span>
+                        </div>
+                        {% endif %}
+
+                        {% if product.badge_country %}
+                        <div class="px-4 py-4 sm:py-5 flex flex-col items-start sm:items-center gap-1">
+                            <span class="text-[10px] sm:text-[11px] uppercase tracking-[0.18em] text-gray-500 font-semibold">
+                                Export country
+                            </span>
+                            <span class="text-base sm:text-lg font-semibold text-gray-900">
+                                {{ product.badge_country }}
+                            </span>
+                        </div>
+                        {% endif %}
+
+                        {% if product.badge_region %}
+                        <div class="px-4 py-4 sm:py-5 flex flex-col items-start sm:items-center gap-1">
+                            <span class="text-[10px] sm:text-[11px] uppercase tracking-[0.18em] text-gray-500 font-semibold">
+                                Region
+                            </span>
+                            <span class="text-base sm:text-lg font-semibold text-gray-900">
+                                {{ product.badge_region }}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
         <!-- Blog Section -->
         <section id="blog" class="py-12 px-4 md:py-16 bg-white sm:px-6 md:px-10 lg:px-16 xl:px-24"
             data-section="blog">
@@ -2044,20 +2134,6 @@
 
                 <!-- Advanced Tab Navigation -->
                 <div class="relative mb-8 sm:mb-10" id="ie-tabs-wrapper">
-                    <!-- Left scroll arrow (hidden by default, shown when can scroll left) -->
-                    <button type="button" id="ie-scroll-left" aria-label="Scroll tabs left"
-                            class="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-white/95 border border-gray-200 shadow-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 hover:shadow-xl transition-all duration-200 opacity-0 pointer-events-none sm:hidden"
-                            style="backdrop-filter: blur(8px);">
-                        <i class="fas fa-chevron-left text-sm"></i>
-                    </button>
-                    
-                    <!-- Right scroll arrow (shown when can scroll right) -->
-                    <button type="button" id="ie-scroll-right" aria-label="Scroll tabs right"
-                            class="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-white/95 border border-gray-200 shadow-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 hover:shadow-xl transition-all duration-200 opacity-0 pointer-events-none sm:hidden"
-                            style="backdrop-filter: blur(8px);">
-                        <i class="fas fa-chevron-right text-sm"></i>
-                    </button>
-                    
                     <!-- Left fade gradient -->
                     <div id="ie-fade-left" class="absolute left-0 top-0 bottom-2 w-8 bg-gradient-to-r from-slate-50 via-slate-50/90 to-transparent pointer-events-none z-10 opacity-0 transition-opacity duration-200 sm:hidden"></div>
                     
@@ -2184,9 +2260,9 @@
                             {% if product.how_to_import_steps %}
                             <!-- How to Import Panel -->
                             <div id="ie-tab-how-import" data-ie-tab-panel role="tabpanel" class="hidden animate-fadeIn">
-                                <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-8">
+                                <div class="flex flex-col justify-center sm:justify-start lg:flex-row lg:items-start lg:justify-between gap-4 mb-8">
                                     <div class="max-w-2xl">
-                                        <div class="flex items-center gap-3 mb-2">
+                                        <div class="flex flex-row justify-center sm:justify-start items-center gap-3 mb-2">
                                             <span class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg">
                                                 <i class="fas fa-route"></i>
                                             </span>
@@ -2194,11 +2270,11 @@
                                                 How to Import
                                             </h3>
                                 </div>
-                                        <p class="text-sm sm:text-base text-gray-600 leading-relaxed pl-[52px]">
+                                        <p class="text-sm sm:text-base text-gray-600 leading-relaxed text-center sm:text-left sm:pl-[52px] font-medium">
                                             Follow these curated steps to move from enquiry to customs-cleared delivery with fewer surprises.
                                         </p>
                                     </div>
-                                    <div class="flex items-center gap-2 bg-gradient-to-r from-gray-900 to-gray-800 text-white rounded-full px-4 py-2 text-xs font-bold tracking-[0.2em] uppercase shadow-lg self-start">
+                                    <div class="flex justify-center mx-auto sm:mx-0 sm:justify-start items-center gap-2 bg-gradient-to-r from-gray-900 to-gray-800 text-white rounded-full px-4 py-2 text-xs font-bold tracking-[0.2em] uppercase shadow-lg">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
                                         <span>{{ product.how_to_import_steps|length|default:1 }} Step{{ product.how_to_import_steps|length|default:1|pluralize }}</span>
                                 </div>
@@ -2213,7 +2289,7 @@
                                         {% for step in product.how_to_import_steps %}
                                         <article class="group relative flex flex-col lg:flex-row gap-4 lg:gap-6" style="animation-delay: {{ forloop.counter0|add:1 }}00ms;">
                                             <!-- Step number -->
-                                            <div class="flex-shrink-0 flex items-start lg:items-center gap-4">
+                                            <div class="flex-shrink-0 hidden sm:flex items-start lg:items-center justify-center lg:justify-start w-full lg:w-auto gap-4">
                                                 <div class="relative z-10 flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-gray-900 to-gray-700 text-white text-sm font-bold shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-300">
                                     {% if forloop.counter < 10 %}0{% endif %}{{ forloop.counter }}
                                                     <!-- Pulse ring on hover -->
@@ -2227,10 +2303,10 @@
                                                 <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-blue-50 to-transparent rounded-bl-3xl opacity-60"></div>
                                                 
                                                 <div class="relative">
-                                                    <h4 class="text-base sm:text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-900 transition-colors">
+                                                    <h4 class="text-base text-center sm:text-left sm:text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-900 transition-colors">
                                                         {{ step.title|default:"Step" }}
                                                     </h4>
-                                                    <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
+                                                    <p class="text-sm text-justify sm:text-base text-gray-600 leading-relaxed font-medium">
                                     {{ step.description }}
                                 </p>
                             </div>
@@ -2245,21 +2321,21 @@
                             {% if product.import_required_documents %}
                             <!-- Import Required Documents Panel -->
                             <div id="ie-tab-import-required" data-ie-tab-panel role="tabpanel" class="hidden animate-fadeIn">
-                                <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-8">
+                                <div class="flex flex-col justify-center sm:justify-start lg:flex-row lg:items-start lg:justify-between gap-4 mb-8">
                                     <div class="max-w-2xl">
-                                        <div class="flex items-center gap-3 mb-2">
+                                        <div class="flex items-center justify-center sm:justify-start items-center gap-3 mb-2">
                                             <span class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-rose-600 text-white shadow-lg">
                                                 <i class="fas fa-file-shield"></i>
                                             </span>
-                                            <h3 class="text-xl sm:text-2xl font-bold text-gray-900">
+                                            <h3 class="text-xl text-center sm:text-2xl font-bold text-gray-900">
                                                 Required Documents
                                             </h3>
                                             </div>
-                                        <p class="text-sm sm:text-base text-gray-600 leading-relaxed pl-[52px]">
+                                        <p class="text-sm sm:text-base text-gray-600 leading-relaxed font-medium">
                                             These documents are mandatory for import clearance and compliance verification.
                                         </p>
                                             </div>
-                                    <div class="flex items-center gap-2 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-full px-4 py-2 text-xs font-bold tracking-[0.15em] uppercase shadow-lg self-start">
+                                    <div class="flex justify-center mx-auto sm:mx-0 sm:justify-start items-center gap-2 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-full px-4 py-2 text-xs font-bold tracking-[0.15em] uppercase shadow-lg">
                                         <i class="fas fa-exclamation-triangle text-[10px]"></i>
                                         <span>{{ product.import_required_documents|length }} Required</span>
                                         </div>
@@ -2298,7 +2374,7 @@
                                                 Available Documents
                                             </h3>
                                         </div>
-                                        <p class="text-sm sm:text-base text-gray-600 leading-relaxed pl-[52px]">
+                                        <p class="text-sm sm:text-base text-gray-600 leading-relaxed pl-[52px] font-medium">
                                             Documents we can help arrange through our verified network of suppliers and partners.
                                         </p>
                                     </div>
@@ -2333,7 +2409,7 @@
                             <div id="ie-tab-shipping" data-ie-tab-panel role="tabpanel" class="hidden animate-fadeIn">
                                 <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-8">
                                     <div class="max-w-2xl">
-                                        <div class="flex items-center gap-3 mb-2">
+                                        <div class="flex items-center justify-center sm:justify-start gap-3 mb-2">
                                             <span class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 text-white shadow-lg">
                                                 <i class="fas fa-shipping-fast"></i>
                                             </span>
@@ -2341,7 +2417,7 @@
                                                 Shipping Options
                                             </h3>
                                         </div>
-                                        <p class="text-sm sm:text-base text-gray-600 leading-relaxed pl-[52px]">
+                                        <p class="text-sm sm:text-base text-gray-600 leading-relaxed font-medium">
                                             Choose the right shipping mode based on urgency, volume and landed cost requirements.
                                         </p>
                     </div>
@@ -2380,7 +2456,7 @@
                                                 {{ opt.name }}
                                             </h4>
                                             
-                                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed text-justify font-medium">
                                                 {% with name_lower=opt.name|default:''|lower %}
                                                     {% if "air" in name_lower %}
                                                         Fastest delivery option. Ideal for urgent, time-sensitive shipments with premium freight rates.
@@ -2419,9 +2495,9 @@
                             {% if product.export_required_documents %}
                             <!-- Export Required Documents Panel -->
                             <div id="ie-tab-export-required" data-ie-tab-panel role="tabpanel" class="hidden animate-fadeIn">
-                                <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-8">
-                                    <div class="max-w-2xl">
-                                        <div class="flex items-center gap-3 mb-2">
+                                <div class="flex flex-col text-center justify-center lg:flex-row lg:items-start lg:justify-between gap-4 mb-8">
+                                    <div class="max-w-2xl text-center sm:text-left">
+                                        <div class="flex items-center justify-center sm:justify-start gap-3 mb-2">
                                             <span class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 text-white shadow-lg">
                                                 <i class="fas fa-file-export"></i>
                                             </span>
@@ -2429,11 +2505,11 @@
                                                 Export Required Documents
                                             </h3>
                                         </div>
-                                        <p class="text-sm sm:text-base text-gray-600 leading-relaxed pl-[52px]">
+                                        <p class="text-sm sm:text-base text-gray-600 leading-relaxed mx-auto sm:mx-0 sm:pl-[52px] font-medium">
                                             Mandatory paperwork required from the exporter's side for customs clearance and banking.
                                         </p>
                                     </div>
-                                    <div class="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-full px-4 py-2 text-xs font-bold tracking-[0.15em] uppercase shadow-lg self-start">
+                                    <div class="flex justify-center mx-auto sm:mx-0 sm:justify-start items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-full px-4 py-2 text-xs font-bold tracking-[0.15em] uppercase shadow-lg">
                                         <i class="fas fa-exclamation-triangle text-[10px]"></i>
                                         <span>{{ product.export_required_documents|length }} Required</span>
                                 </div>
@@ -2462,8 +2538,8 @@
                             <!-- Export Available Documents Panel -->
                             <div id="ie-tab-export-available" data-ie-tab-panel role="tabpanel" class="hidden animate-fadeIn">
                                 <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-8">
-                                    <div class="max-w-2xl">
-                                        <div class="flex items-center gap-3 mb-2">
+                                    <div class="max-w-2xl text-center sm:text-left">
+                                        <div class="flex items-center justify-center sm:justify-start gap-3 mb-2">
                                             <span class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-600 text-white shadow-lg">
                                                 <i class="fas fa-file-signature"></i>
                                             </span>
@@ -2471,11 +2547,11 @@
                                                 Export Available Documents
                                             </h3>
             </div>
-                                        <p class="text-sm sm:text-base text-gray-600 leading-relaxed pl-[52px]">
+                                        <p class="text-sm sm:text-base text-gray-600 leading-relaxed mx-auto sm:mx-0 sm:pl-[52px] font-medium">
                                             Certificates and paperwork we can typically help coordinate through our supplier network.
                                         </p>
                                     </div>
-                                    <div class="flex items-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-600 text-white rounded-full px-4 py-2 text-xs font-bold tracking-[0.15em] uppercase shadow-lg self-start">
+                                    <div class="flex justify-center mx-auto sm:mx-0 sm:justify-start items-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-600 text-white rounded-full px-4 py-2 text-xs font-bold tracking-[0.15em] uppercase shadow-lg">
                                         <i class="fas fa-check-double text-[10px]"></i>
                                         <span>{{ product.export_available_documents|length }} Available</span>
                                 </div>
@@ -2504,8 +2580,8 @@
                             <!-- Packaging Details Panel -->
                             <div id="ie-tab-packaging" data-ie-tab-panel role="tabpanel" class="hidden animate-fadeIn">
                                 <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-8">
-                                    <div class="max-w-2xl">
-                                        <div class="flex items-center gap-3 mb-2">
+                                    <div class="max-w-2xl text-center sm:text-left">
+                                        <div class="flex items-center justify-center sm:justify-start gap-3 mb-2">
                                             <span class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg">
                                                 <i class="fas fa-box-open"></i>
                                             </span>
@@ -2513,11 +2589,11 @@
                                                 Packaging Options
                                             </h3>
                                         </div>
-                                        <p class="text-sm sm:text-base text-gray-600 leading-relaxed pl-[52px]">
+                                        <p class="text-sm sm:text-base text-gray-600 leading-relaxed mx-auto sm:mx-0 sm:pl-[52px] font-medium">
                                             Industrial-grade packaging options optimized for safety, handling, and storage requirements.
                                         </p>
                                     </div>
-                                    <div class="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-full px-4 py-2 text-xs font-bold tracking-[0.15em] uppercase shadow-lg self-start">
+                                    <div class="flex justify-center mx-auto sm:mx-0 sm:justify-start items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-full px-4 py-2 text-xs font-bold tracking-[0.15em] uppercase shadow-lg self-start">
                                         <i class="fas fa-cubes text-[10px]"></i>
                                         <span>{{ product.packaging_details|length }} Option{{ product.packaging_details|length|pluralize }}</span>
                                 </div>
@@ -2551,7 +2627,7 @@
                                                         {% endwith %}
                                                     </div>
                                     <div>
-                                                        <h4 class="text-base sm:text-lg font-bold text-gray-900">
+                                                        <h4 class="text-base text-left sm:text-lg font-bold text-gray-900">
                                                             {{ pack.type|default:"Packaging" }}
                                                         </h4>
                                                         <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Container Type</p>
@@ -2589,8 +2665,8 @@
                             <!-- Important Compliance Panel -->
                             <div id="ie-tab-compliance" data-ie-tab-panel role="tabpanel" class="hidden animate-fadeIn">
                                 <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-8">
-                                    <div class="max-w-2xl">
-                                        <div class="flex items-center gap-3 mb-2">
+                                    <div class="max-w-2xl mx-auto lg:mx-0">
+                                        <div class="flex items-center gap-3 mb-2 justify-center lg:justify-start">
                                             <span class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white shadow-lg">
                                                 <i class="fas fa-shield-alt"></i>
                                             </span>
@@ -2598,11 +2674,11 @@
                                                 Compliance & Safety
                                             </h3>
                                         </div>
-                                        <p class="text-sm sm:text-base text-gray-600 leading-relaxed pl-[52px]">
+                                        <p class="text-sm sm:text-base text-gray-600 leading-relaxed sm:pl-[52px] text-center lg:text-left font-medium">
                                             Key regulatory, quality and safety considerations to review before import or export.
                                         </p>
                                     </div>
-                                    <div class="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-full px-4 py-2 text-xs font-bold tracking-[0.15em] uppercase shadow-lg self-start">
+                                    <div class="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-full px-4 py-2 text-xs font-bold tracking-[0.15em] uppercase shadow-lg self-center lg:self-start">
                                         <i class="fas fa-gavel text-[10px]"></i>
                                         <span>{{ product.important_compliance|length }} Note{{ product.important_compliance|length|pluralize }}</span>
                                     </div>
@@ -2617,7 +2693,7 @@
                                         {% for item in product.important_compliance %}
                                         <article class="group relative flex flex-col lg:flex-row gap-4 lg:gap-6" style="animation-delay: {{ forloop.counter0|add:1 }}00ms;">
                                             <!-- Step number -->
-                                            <div class="flex-shrink-0 flex items-start lg:items-center gap-4">
+                                            <div class="flex-shrink-0 hidden sm:flex items-start lg:items-center gap-4 justify-center lg:justify-start">
                                                 <div class="relative z-10 flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-gray-900 to-gray-700 text-white text-sm font-bold shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-300">
                                                     {% if forloop.counter < 10 %}0{% endif %}{{ forloop.counter }}
                                                     <!-- Pulse ring on hover -->
@@ -2630,11 +2706,11 @@
                                                 <!-- Decorative corner accent -->
                                                 <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-purple-50 to-transparent rounded-bl-3xl opacity-60"></div>
                                                 
-                                                <div class="relative">
+                                                <div class="relative text-center lg:text-left">
                                                     <h4 class="text-base sm:text-lg font-semibold text-gray-900 mb-2 group-hover:text-purple-900 transition-colors">
                                                         {{ item.title|default:"Compliance Highlight" }}
                                                     </h4>
-                                                    <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
+                                                    <p class="text-sm text-justify sm:text-base text-gray-600 leading-relaxed font-medium">
                                                         {{ item.description }}
                                                     </p>
                                                 </div>
@@ -2828,15 +2904,32 @@
                 // Scroll active tab into view
                 function scrollActiveTabIntoView(btn) {
                     if (!scrollContainer || !btn) return;
+
+                    // On small / mobile screens, always align the active tab
+                    // close to the left edge of the scroll container.
+                    if (window.innerWidth <= 640) {
+                        // Account for small horizontal padding on the scroll container.
+                        const left = Math.max(0, btn.offsetLeft - 16);
+                        scrollContainer.scrollTo({
+                            left,
+                            behavior: 'smooth'
+                        });
+                        return;
+                    }
+
+                    // On larger screens, keep the existing "center if not fully visible" behaviour.
                     const containerRect = scrollContainer.getBoundingClientRect();
                     const btnRect = btn.getBoundingClientRect();
                     
-                    // Check if button is fully visible
-                    const isFullyVisible = btnRect.left >= containerRect.left && btnRect.right <= containerRect.right;
+                    const isFullyVisible =
+                        btnRect.left >= containerRect.left &&
+                        btnRect.right <= containerRect.right;
                     
                     if (!isFullyVisible) {
-                        // Calculate scroll position to center the button
-                        const scrollLeft = btn.offsetLeft - (scrollContainer.clientWidth / 2) + (btn.offsetWidth / 2);
+                        const scrollLeft =
+                            btn.offsetLeft -
+                            (scrollContainer.clientWidth / 2) +
+                            (btn.offsetWidth / 2);
                         scrollContainer.scrollTo({
                             left: Math.max(0, scrollLeft),
                             behavior: 'smooth'
@@ -3271,12 +3364,12 @@
             <div class="max-w-5xl sm:max-w-7xl mx-auto px-4">
                 <div class="flex flex-col justify-center items-center">
                     <div class="text-center items-center flex-col justify-center gap-2 mb-8 md:mb-0">
-                        <div class="mt-2 text-xl md:text-3xl font-bold tracking-tight text-gray-900 text-center">
-                            {% if product.city %}
+                        <div class="text-xl md:text-3xl font-bold tracking-tight text-gray-900 text-center">
+                            {% comment %} {% if product.city %}
                             <span class="flex text-center justify-center items-center gap-2 mb-2">
                                 <i class="fas fa-map-marker-alt text-blue-600"></i>Supplier Available from: {{ product.city }}
                             </span>
-                            {% endif %}
+                            {% endif %} {% endcomment %}
                             {% if product.origin_country %}
                             <span class="flex text-center justify-center items-center gap-2 mb-2">
                                 <i class="fas fa-globe text-blue-600"></i>Supplier Available from: {{ product.origin_country }}
@@ -3398,10 +3491,12 @@
                 <p class="mt-4 text-gray-600 text-sm md:text-base font-medium sm:font-normal max-w-2xl mx-auto">
                     Everyday we work hard to make life of our clients better and happier.
                 </p>
-                <form id="discussForm" class="mt-8 flex flex-col sm:flex-row items-stretch justify-center gap-3">
+                <form id="discussForm" class="mt-8 flex flex-col sm:flex-row sm:flex-wrap items-stretch justify-center gap-3">
                     <input name="quantity" type="number" min="1" placeholder="Quantity"
                         class="px-5 py-2.5 rounded-md border border-gray-300 bg-white text-gray-700 placeholder-gray-500 shadow-sm w-full sm:w-auto" />
                     <input name="mobile" type="tel" placeholder="Mobile Number"
+                        class="px-5 py-2.5 rounded-md border border-gray-300 bg-white text-gray-700 placeholder-gray-500 shadow-sm w-full sm:w-auto" />
+                    <input name="email" type="email" placeholder="Email Address"
                         class="px-5 py-2.5 rounded-md border border-gray-300 bg-white text-gray-700 placeholder-gray-500 shadow-sm w-full sm:w-auto" />
                     <select name="frequency"
                         class="px-5 py-2.5 rounded-md border border-gray-300 bg-white text-gray-700 placeholder-gray-500 outline-none shadow-sm w-full sm:w-auto appearance-none cursor-pointer">
@@ -3410,6 +3505,7 @@
                         <option value="repeat">Repeat</option>
                     </select>
                     <button type="submit"
+                        data-cta="discuss_enquiry_submit"
                         class="px-6 py-2.5 rounded-md bg-blue-600 text-white font-medium hover:bg-blue-700 active:scale-[0.98] transition-transform shadow-sm w-full sm:w-auto">Submit</button>
                 </form>
                 <p id="discussStatus" class="mt-3 text-sm text-gray-700 hidden"></p>
@@ -3558,16 +3654,18 @@
             function getFormSnapshot() {
                 const quantity = form.querySelector('input[name="quantity"]')?.value || '';
                 const mobile = form.querySelector('input[name="mobile"]')?.value || '';
+                const email = form.querySelector('input[name="email"]')?.value || '';
                 const frequency = form.querySelector('select[name="frequency"]')?.value || '';
-                return { quantity, mobile, frequency };
+                return { quantity, mobile, email, frequency };
             }
 
             function hasMeaningfulData(snapshot) {
                 if (!snapshot) return false;
-                const { quantity, mobile, frequency } = snapshot;
+                const { quantity, mobile, email, frequency } = snapshot;
                 return Boolean(
                     (quantity && quantity.toString().trim().length) ||
                     (mobile && mobile.toString().trim().length) ||
+                    (email && email.toString().trim().length) ||
                     (frequency && frequency.toString().trim().length)
                 );
             }
@@ -3593,6 +3691,7 @@
                     product_name: pname || '',
                     quantity: snap.quantity,
                     mobile: snap.mobile,
+                    email: snap.email,
                     frequency: snap.frequency,
                     page_url: window.location.pathname + window.location.search,
                     reason: reason || 'typing',
@@ -3672,6 +3771,7 @@
                 const submitBtn = form.querySelector('button[type="submit"]');
                 const quantity = form.querySelector('input[name="quantity"]')?.value || '';
                 const mobile = form.querySelector('input[name="mobile"]')?.value || '';
+                const email = form.querySelector('input[name="email"]')?.value || '';
                 const frequency = form.querySelector('select[name="frequency"]')?.value || '';
                 const pid = "{{ product.id|default:'' }}";
                 const pslug = "{{ product.slug|default:'' }}";
@@ -3698,6 +3798,7 @@
                             product_name: pname,
                             quantity,
                             mobile,
+                            email,
                             frequency
                         })
                     });
@@ -3776,17 +3877,22 @@
   </footer>
 
     <script>
-        // --- Behavioural tracking client ---
+        // --- Behavioural tracking client (encrypted -> 1matrix.io) ---
         (function () {
             try {
                 const CONFIG = {
-                    ingestUrl: '{{ analytics.ingest_url|default:"/api/analytics/ingest/" }}',
-                    sampleRate: {{ analytics.sample_rate|default: 1.0
-            }},
-            requireConsent: { { analytics.require_consent | yesno: 'true,false' } },
-        batchIntervalMs: 5000,
-            maxBatch: 40
-        };
+                    // Remote 1matrix.io ingest endpoint (encrypted).
+                    ingestUrl: '{{ analytics.ingest_url|default:"https://1matrix.io/api/gs-analytics/ingest/" }}',
+                    // Local mirror endpoint inside this Django project.
+                    localIngestUrl: '/api/analytics/ingest/',
+                    sampleRate: {{ analytics.sample_rate|default:1.0 }},
+                    requireConsent: {{ analytics.require_consent|yesno:"true,false" }},
+                    // Public keys only – private keys stay on the respective servers.
+                    remotePublicKeyPem: '{{ analytics.remote_public_key_pem|default:""|escapejs }}',
+                    localPublicKeyPem: '{{ analytics.local_public_key_pem|default:""|escapejs }}',
+                    batchIntervalMs: 5000,
+                    maxBatch: 40,
+                };
 
         const win = window; const doc = document;
         // Client-side sampling
@@ -3834,12 +3940,101 @@
             video_seconds_watched: 0,
             idle_time_ms: 0,
             events_count: 0,
+            // Per-section dwell time in milliseconds, keyed by `data-section` id.
+            section_durations: {},
+            last_active_section: null,
+            // Updated periodically; final value is "time on page".
+            duration_ms: 0,
         };
+
+        // Track which logical section (data-section) is currently "active"
+        // so we can derive most/least viewed, exit section, etc.
+        let activeSectionId = null;
+        let activeSectionStartMs = 0;
 
         // Event queue with offline fallback
         const q = [];
         const offlineKey = 'bs_event_queue';
-        try { const cached = JSON.parse(localStorage.getItem(offlineKey) || '[]'); if (Array.isArray(cached)) q.push(...cached); } catch (e) { }
+        try {
+            const cached = JSON.parse(localStorage.getItem(offlineKey) || '[]');
+            if (Array.isArray(cached)) q.push(...cached);
+        } catch (e) { }
+
+        // Helper: convert ArrayBuffer <-> base64 (for crypto payloads)
+        function arrayBufferToBase64(buffer) {
+            const bytes = new Uint8Array(buffer);
+            let binary = '';
+            const chunkSize = 0x8000;
+            for (let i = 0; i < bytes.length; i += chunkSize) {
+                binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+            }
+            return btoa(binary);
+        }
+
+        function pemToArrayBuffer(pem) {
+            const clean = (pem || '')
+                .replace(/-----BEGIN PUBLIC KEY-----/g, '')
+                .replace(/-----END PUBLIC KEY-----/g, '')
+                .replace(/[\r\n\s]/g, '');
+            if (!clean) return null;
+            const binary = atob(clean);
+            const len = binary.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        async function encryptAnalyticsPayload(json, publicKeyPem) {
+            try {
+                if (!publicKeyPem || !win.crypto || !crypto.subtle) {
+                    return null;
+                }
+                const publicKeyBuffer = pemToArrayBuffer(publicKeyPem);
+                if (!publicKeyBuffer) return null;
+
+                const publicKey = await crypto.subtle.importKey(
+                    'spki',
+                    publicKeyBuffer,
+                    { name: 'RSA-OAEP', hash: 'SHA-256' },
+                    false,
+                    ['encrypt'],
+                );
+
+                const aesKey = await crypto.subtle.generateKey(
+                    { name: 'AES-GCM', length: 256 },
+                    true,
+                    ['encrypt'],
+                );
+
+                const iv = win.crypto.getRandomValues(new Uint8Array(12));
+                const encoded = new TextEncoder().encode(json);
+
+                const cipherBuffer = await crypto.subtle.encrypt(
+                    { name: 'AES-GCM', iv },
+                    aesKey,
+                    encoded,
+                );
+
+                const rawAesKey = await crypto.subtle.exportKey('raw', aesKey);
+                const encryptedKeyBuffer = await crypto.subtle.encrypt(
+                    { name: 'RSA-OAEP' },
+                    publicKey,
+                    rawAesKey,
+                );
+
+                return {
+                    alg: 'RSA-OAEP/AES-GCM',
+                    key: arrayBufferToBase64(encryptedKeyBuffer),
+                    iv: arrayBufferToBase64(iv.buffer),
+                    data: arrayBufferToBase64(cipherBuffer),
+                };
+            } catch (e) {
+                // If encryption fails, we prefer to drop analytics rather than send plain-text.
+                return null;
+            }
+        }
 
         function pushEvent(ev) {
             ev.session_id = ctx.session_id;
@@ -3849,30 +4044,117 @@
             ev.referrer = document.referrer || '';
             ev.occurred_at = ev.occurred_at || new Date().toISOString();
             q.push(ev); ctx.events_count++;
-            if (!navigator.onLine) { localStorage.setItem(offlineKey, JSON.stringify(q.slice(-200))); }
+            if (!navigator.onLine) {
+                localStorage.setItem(offlineKey, JSON.stringify(q.slice(-200)));
+            }
             if (q.length >= CONFIG.maxBatch) flush();
         }
 
-        // Throttled flush
+        // Expose a minimal global hook so other inline scripts can push events.
+        win.__bsPushEvent = pushEvent;
+
+        // Throttled flush:
+        // 1) Encrypt + send to local Django ingest (if local public key present)
+        // 2) Encrypt + send to 1matrix.io (if remote public key present)
         let flushing = false;
         async function flush() {
-            if (flushing || q.length === 0) return; flushing = true;
+            if (flushing || q.length === 0) return;
+            flushing = true;
             const batch = q.splice(0, CONFIG.maxBatch);
-            const payload = { session: ctx, events: batch };
+
+            let bodyStr = '';
+            try {
+                const payload = { session: ctx, events: batch };
+                const json = JSON.stringify(payload);
+
+                // (1) Local mirror: encrypt & send to this project's API (if configured).
+                if (CONFIG.localIngestUrl && CONFIG.localPublicKeyPem) {
+                    try {
+                        const localEnvelope = await encryptAnalyticsPayload(
+                            json,
+                            CONFIG.localPublicKeyPem,
+                        );
+                        if (localEnvelope) {
+                            const localBody = JSON.stringify(localEnvelope);
+                            if (navigator.sendBeacon) {
+                                const blob = new Blob([localBody], { type: 'application/json' });
+                                navigator.sendBeacon(CONFIG.localIngestUrl, blob);
+                            } else {
+                                fetch(CONFIG.localIngestUrl, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: localBody,
+                                    keepalive: true,
+                                }).catch(() => {});
+                            }
+                        }
+                    } catch (e) {
+                        // Local mirror is strictly best-effort; ignore errors.
+                    }
+                }
+
+                // (2) Encrypt for 1matrix.io; if this fails we still keep the local copy.
+                if (!CONFIG.ingestUrl || !CONFIG.remotePublicKeyPem) {
+                    flushing = false;
+                    return;
+                }
+                const encrypted = await encryptAnalyticsPayload(
+                    json,
+                    CONFIG.remotePublicKeyPem,
+                );
+                if (!encrypted) {
+                    flushing = false;
+                    return;
+                }
+                bodyStr = JSON.stringify(encrypted);
+            } catch (e) {
+                // On unexpected errors we stop this flush; local mirror may still have succeeded.
+                flushing = false;
+                return;
+            }
+
             try {
                 await fetch(CONFIG.ingestUrl, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), keepalive: true
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: bodyStr,
+                    keepalive: true,
                 });
                 localStorage.removeItem(offlineKey);
             } catch (e) {
                 // Put back at front and persist
                 batch.reverse().forEach(ev => q.unshift(ev));
                 localStorage.setItem(offlineKey, JSON.stringify(q.slice(-200)));
-            } finally { flushing = false; }
+            } finally {
+                flushing = false;
         }
+        }
+
         setInterval(flush, CONFIG.batchIntervalMs);
-        win.addEventListener('beforeunload', () => { ctx.ended_at = new Date().toISOString(); flush(); });
-        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { ctx.ended_at = new Date().toISOString(); flush(); } });
+
+        // Ensure we capture final dwell time and per-section durations before unload.
+        function finaliseActiveSection() {
+            if (ctx.last_active_section && activeSectionStartMs) {
+                const now = Date.now();
+                const delta = Math.max(0, now - activeSectionStartMs);
+                ctx.section_durations[ctx.last_active_section] =
+                    (ctx.section_durations[ctx.last_active_section] || 0) + delta;
+                activeSectionStartMs = now;
+            }
+        }
+
+        win.addEventListener('beforeunload', () => {
+            ctx.ended_at = new Date().toISOString();
+            finaliseActiveSection();
+            flush();
+        });
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                ctx.ended_at = new Date().toISOString();
+                finaliseActiveSection();
+                flush();
+            }
+        });
 
         // Load performance timings (first paint etc.)
         if ('performance' in win && performance.getEntriesByType) {
@@ -3905,15 +4187,34 @@
             }
         }, { passive: true });
 
-        // Section view tracking via IntersectionObserver
+        // Section view + dwell-time tracking via IntersectionObserver
         if ('IntersectionObserver' in win) {
             const io = new IntersectionObserver((entries) => {
+                let bestEntry = null;
                 entries.forEach(e => {
-                    if (e.isIntersecting && e.intersectionRatio >= 0.5) {
+                    const ratio = e.intersectionRatio || 0;
+                    if (e.isIntersecting && ratio >= 0.5) {
                         const id = e.target.getAttribute('data-section') || 'section';
+                        // Fire a lightweight view event the first time we see the section.
                         pushEvent({ event_type: 'section_view', payload: { id } });
+                        if (!bestEntry || ratio > bestEntry.intersectionRatio) {
+                            bestEntry = e;
+                        }
                     }
-                })
+                });
+
+                if (bestEntry) {
+                    const id = bestEntry.target.getAttribute('data-section') || 'section';
+                    const now = Date.now();
+                    if (activeSectionId && activeSectionId !== id && activeSectionStartMs) {
+                        const delta = Math.max(0, now - activeSectionStartMs);
+                        ctx.section_durations[activeSectionId] =
+                            (ctx.section_durations[activeSectionId] || 0) + delta;
+                    }
+                    activeSectionId = id;
+                    activeSectionStartMs = now;
+                    ctx.last_active_section = id;
+                }
             }, { threshold: [0.5] });
             document.querySelectorAll('[data-section]').forEach(el => io.observe(el));
         }
@@ -3970,10 +4271,22 @@
             form.addEventListener('submit', () => { ctx.enquiry_submissions++; pushEvent({ event_type: 'enquiry_submit' }); });
         })();
 
-        // Idle/active tracking
+        // Idle/active tracking + overall duration
         let idleSince = Date.now();
-        function markActive() { if (Date.now() - idleSince > 1000) { ctx.idle_time_ms += Date.now() - idleSince; } idleSince = Date.now(); }
-        ['mousemove', 'keydown', 'scroll', 'touchstart'].forEach(evt => document.addEventListener(evt, markActive, { passive: true }));
+        function markActive() {
+            const now = Date.now();
+            if (now - idleSince > 1000) {
+                ctx.idle_time_ms += now - idleSince;
+            }
+            idleSince = now;
+        }
+        ['mousemove', 'keydown', 'scroll', 'touchstart'].forEach(evt =>
+            document.addEventListener(evt, markActive, { passive: true })
+        );
+        // Update total time-on-page once per second
+        setInterval(() => {
+            ctx.duration_ms = Date.now() - new Date(ctx.started_at).getTime();
+        }, 1000);
 
         // Exit-intent (desktop)
         document.addEventListener('mouseout', (e) => { if (e.clientY <= 0) { pushEvent({ event_type: 'exit_intent' }); } });
@@ -4977,23 +5290,23 @@
                 <div class="text-left max-w-xs mx-auto mt-[-1.5rem]">
                     <h2 class="text-2xl md:text-3xl font-bold text-gray-900">Quick enquiry</h2>
                     <p class="mt-2 text-sm text-gray-500">
-                        Share your mobile number and we’ll call you back with the best options for
+                        Share your email address and we’ll contact you back with the best options for
                         <span class="font-semibold">{{ product.product_title|default:"this product" }}</span>.
                     </p>
                 </div>
 
                 <form class="mt-6 space-y-4 max-w-xs mx-auto" onsubmit="event.preventDefault(); submitQuickEnquiry();">
                     <div>
-                        <label for="quick-enquiry-mobile" class="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">
-                            Mobile Number
+                        <label for="quick-enquiry-email" class="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">
+                            Email Address
                         </label>
                         <input
-                            type="tel"
-                            name="quick-enquiry-mobile"
-                            id="quick-enquiry-mobile"
+                            type="email"
+                            name="quick-enquiry-email"
+                            id="quick-enquiry-email"
                             class="w-full px-4 py-3 text-md font-medium text-gray-700 placeholder-gray-500 bg-gray-100 border-2 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent"
-                            placeholder="Enter your mobile number"
-                            autocomplete="tel"
+                            placeholder="Enter your email address"
+                            autocomplete="email"
                         >
                     </div>
                     <p id="quick-enquiry-status" class="text-xs text-gray-600 hidden"></p>
@@ -5003,6 +5316,7 @@
                     <button
                         type="button"
                         id="quick-enquiry-submit-btn"
+                        data-cta="quick_enquiry_submit"
                         onclick="submitQuickEnquiry()"
                         class="inline-flex items-center gap-x-2 rounded-full bg-black px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black transition-all duration-300"
                     >
@@ -5078,7 +5392,7 @@
             <img src="/media/Original Content By globesuggest.png" alt="Original Content - globesuggest">
             <span class="tooltip" role="tooltip">Original Content</span>
         </div>
-        <div class="logo-item" aria-hidden="true" onclick="openQuickEnquiryPopup()" style="cursor: pointer;">
+        <div class="logo-item" aria-hidden="true" onclick="openQuickEnquiryPopup()" style="cursor: pointer;" data-cta="quick_enquiry_badge">
             <div class="h-14 w-14 rounded-full bg-gray-600 flex items-center justify-center">
                 <i class="fas fa-bolt text-2xl text-white"></i>
             </div>
@@ -5090,6 +5404,7 @@
     <div class="fixed bottom-3 right-3 z-40 lg:hidden">
         <button
             type="button"
+            data-cta="quick_enquiry_fab"
             onclick="openQuickEnquiryPopup()"
             class="flex items-center gap-1.5 rounded-full bg-black text-white px-3 py-1.5 shadow-lg hover:bg-gray-900 active:scale-95 transition transform"
         >
@@ -5153,6 +5468,14 @@
                 searchBtn.classList.add('active');
                 searchOverlay.classList.add('active');
                 searchResults.classList.add('active');
+                
+                // Track search bar usage (mobile)
+                if (window.__bsPushEvent) {
+                    window.__bsPushEvent({
+                        event_type: 'search_open',
+                        payload: { source: 'mobile_inline' },
+                    });
+                }
                 
                 // Focus input after animation
                 setTimeout(() => {
@@ -5241,6 +5564,7 @@
 
             // Search functionality
             let searchTimeout;
+            let lastTrackedQuery = '';
             function handleMobileSearchInput(query) {
                 clearTimeout(searchTimeout);
                 
@@ -5282,6 +5606,18 @@
                         });
                     }
                 });
+
+                // Track searched keywords (mobile)
+                if (window.__bsPushEvent && query && query !== lastTrackedQuery) {
+                    window.__bsPushEvent({
+                        event_type: 'search',
+                        payload: {
+                            query: query,
+                            source: 'mobile_inline',
+                        },
+                    });
+                    lastTrackedQuery = query;
+                }
 
                 // Limit to 8 results
                 const limitedResults = results.slice(0, 8);
@@ -5381,11 +5717,11 @@
         (function () {
             const popup = document.getElementById('quick-enquiry-popup');
             const popupContent = document.getElementById('quick-enquiry-popup-content');
-            const mobileInput = document.getElementById('quick-enquiry-mobile');
+            const emailInput = document.getElementById('quick-enquiry-email');
             const statusEl = document.getElementById('quick-enquiry-status');
             const submitBtn = document.getElementById('quick-enquiry-submit-btn');
 
-            if (!popup || !popupContent || !mobileInput || !statusEl || !submitBtn) return;
+            if (!popup || !popupContent || !emailInput || !statusEl || !submitBtn) return;
 
             window.openQuickEnquiryPopup = function () {
                 popup.classList.remove('hidden');
@@ -5395,8 +5731,16 @@
                 }, 50);
                 statusEl.classList.add('hidden');
                 statusEl.textContent = '';
-                mobileInput.value = '';
-                mobileInput.focus({ preventScroll: true });
+                emailInput.value = '';
+                emailInput.focus({ preventScroll: true });
+
+                // Track that the quick enquiry flow was opened
+                if (window.__bsPushEvent) {
+                    window.__bsPushEvent({
+                        event_type: 'enquiry_focus',
+                        payload: { source: 'quick_popup' },
+                    });
+                }
             };
 
             window.closeQuickEnquiryPopup = function () {
@@ -5414,10 +5758,10 @@
             }
 
             window.submitQuickEnquiry = async function () {
-                const mobile = (mobileInput.value || '').trim();
-                if (!mobile) {
-                    setStatus('Please enter your mobile number.', false);
-                    mobileInput.focus();
+                const email = (emailInput.value || '').trim();
+                if (!email) {
+                    setStatus('Please enter your email address.', false);
+                    emailInput.focus();
                     return;
                 }
 
@@ -5429,6 +5773,14 @@
                 submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
                 setStatus('Submitting your enquiry...', true);
 
+                // Track explicit enquiry submission for conversion metrics
+                if (window.__bsPushEvent) {
+                    window.__bsPushEvent({
+                        event_type: 'enquiry_submit',
+                        payload: { source: 'quick_popup' },
+                    });
+                }
+
                 try {
                     const resp = await fetch('/api/enquiry/submit/', {
                         method: 'POST',
@@ -5437,7 +5789,7 @@
                             product_id: pid,
                             product_slug: pslug,
                             product_name: pname,
-                            mobile: mobile
+                            email: email
                         })
                     });
                     const data = await resp.json().catch(() => ({}));

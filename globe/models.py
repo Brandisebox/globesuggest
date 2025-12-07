@@ -231,6 +231,7 @@ class Lead(models.Model):
         blank=True,
         help_text="One‑time / repeat or similar purchase frequency indicator.",
     )
+    email = models.EmailField(blank=True)
     mobile = models.CharField(max_length=32, blank=True)
     page_url = models.CharField(
         max_length=500,
@@ -266,3 +267,152 @@ class Lead(models.Model):
     def __str__(self) -> str:  # pragma: no cover - simple representation
         base = self.product_name or self.product_id or "Lead"
         return f"{base} - {self.mobile or 'unknown'}"
+
+
+class AnalyticsSession(models.Model):
+    """
+    Stores a normalised, per-session snapshot of behavioural analytics
+    for a single product detail page view.
+
+    The raw event stream is stored in `AnalyticsEvent`; this model keeps
+    the rolled-up metrics we care about for reporting (scroll depth,
+    dwell time, device breakdown, etc.).
+    """
+
+    session_id = models.CharField(
+        max_length=64,
+        db_index=True,
+        help_text="Anonymous session identifier emitted by the frontend tracker.",
+    )
+    product_id = models.CharField(
+        max_length=64,
+        blank=True,
+        db_index=True,
+        help_text="Upstream product identifier associated with this session.",
+    )
+    user_id = models.CharField(
+        max_length=64,
+        blank=True,
+        help_text="Optional user identifier if the visitor is authenticated.",
+    )
+
+    started_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Client-side timestamp when the session started.",
+    )
+    ended_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Client-side timestamp when the visitor left the page.",
+    )
+
+    path = models.CharField(max_length=500, blank=True)
+    traffic_source = models.CharField(max_length=64, blank=True)
+
+    utm_source = models.CharField(max_length=100, blank=True)
+    utm_medium = models.CharField(max_length=100, blank=True)
+    utm_campaign = models.CharField(max_length=100, blank=True)
+    utm_term = models.CharField(max_length=100, blank=True)
+    utm_content = models.CharField(max_length=100, blank=True)
+
+    device = models.CharField(
+        max_length=32,
+        blank=True,
+        help_text="Normalised device type (desktop / tablet / mobile).",
+    )
+    os = models.CharField(max_length=128, blank=True)
+    browser = models.CharField(max_length=255, blank=True)
+    viewport = models.CharField(max_length=32, blank=True)
+    orientation = models.CharField(max_length=32, blank=True)
+    language = models.CharField(max_length=32, blank=True)
+    country = models.CharField(
+        max_length=64,
+        blank=True,
+        help_text="Visitor country derived from IP at the ingest tier (optional).",
+    )
+
+    consent = models.BooleanField(default=False)
+    is_returning = models.BooleanField(default=False)
+    sampled = models.BooleanField(default=True)
+
+    max_scroll_pct = models.PositiveSmallIntegerField(default=0)
+    cta_clicks = models.PositiveIntegerField(default=0)
+    enquiry_submissions = models.PositiveIntegerField(default=0)
+    video_seconds_watched = models.PositiveIntegerField(default=0)
+    idle_time_ms = models.PositiveIntegerField(default=0)
+    events_count = models.PositiveIntegerField(default=0)
+    duration_ms = models.PositiveIntegerField(default=0)
+
+    section_durations = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text=(
+            "Mapping of section id (data-section) to dwell time in milliseconds. "
+            "Used to compute most/least viewed sections and exit section."
+        ),
+    )
+    last_active_section = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="Last section id that was active before the session ended.",
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("-started_at", "-created_at")
+        unique_together = ("session_id", "product_id")
+        verbose_name = "Analytics session"
+        verbose_name_plural = "Analytics sessions"
+
+    def __str__(self) -> str:  # pragma: no cover - simple representation
+        return f"{self.session_id} / {self.product_id or 'no-product'}"
+
+
+class AnalyticsEvent(models.Model):
+    """
+    Raw, append-only event stream for behavioural analytics.
+
+    Each event ties back to an `AnalyticsSession` and stores the
+    high-level type plus an arbitrary JSON payload so we can evolve
+    the frontend tracker without needing DB schema changes.
+    """
+
+    session = models.ForeignKey(
+        AnalyticsSession,
+        on_delete=models.CASCADE,
+        related_name="events",
+    )
+    event_type = models.CharField(
+        max_length=64,
+        db_index=True,
+        help_text="Normalised event type, e.g. page_view, cta_click, scroll_depth.",
+    )
+    occurred_at = models.DateTimeField(
+        help_text="Client-side timestamp when the event occurred.",
+    )
+
+    page_url = models.CharField(max_length=500, blank=True)
+    referrer = models.CharField(max_length=500, blank=True)
+
+    payload = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="Opaque event payload as emitted by the frontend tracker.",
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ("-occurred_at", "-id")
+        verbose_name = "Analytics event"
+        verbose_name_plural = "Analytics events"
+        indexes = [
+            models.Index(fields=["event_type", "occurred_at"]),
+            models.Index(fields=["session", "event_type"]),
+        ]
+
+    def __str__(self) -> str:  # pragma: no cover - simple representation
+        return f"{self.event_type} @ {self.occurred_at:%Y-%m-%d %H:%M:%S}"

@@ -1,3 +1,4 @@
+import base64
 import json
 import urllib.error
 import urllib.parse
@@ -8,9 +9,14 @@ from django.core.mail import send_mail
 from django.http import JsonResponse, Http404, HttpRequest
 from django.shortcuts import render
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from django.utils.text import slugify
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 from .models import (
     PrivacyPolicy,
@@ -21,7 +27,89 @@ from .models import (
     Lead,
     ServiceTab,
     ServiceTabPoint,
+    AnalyticsSession,
+    AnalyticsEvent,
 )
+from .schema_utils import build_product_schema
+
+
+_LOCAL_ANALYTICS_PRIVATE_KEY = None
+
+
+def _get_local_analytics_private_key():
+    """
+    Lazily load and cache the RSA private key used to decrypt analytics
+    envelopes sent to the local `/api/analytics/ingest/` endpoint.
+
+    The corresponding public key is exposed to the frontend via the
+    context processor, while this private key must only be provided
+    via environment variable and never rendered in templates.
+    """
+
+    global _LOCAL_ANALYTICS_PRIVATE_KEY
+    if _LOCAL_ANALYTICS_PRIVATE_KEY is not None:
+        return _LOCAL_ANALYTICS_PRIVATE_KEY
+
+    pem = getattr(settings, "ANALYTICS_LOCAL_PRIVATE_KEY_PEM", "") or ""
+    if not pem.strip():
+        _LOCAL_ANALYTICS_PRIVATE_KEY = None
+        return None
+
+    try:
+        _LOCAL_ANALYTICS_PRIVATE_KEY = serialization.load_pem_private_key(
+            pem.encode("utf-8"),
+            password=None,
+        )
+    except Exception:
+        _LOCAL_ANALYTICS_PRIVATE_KEY = None
+    return _LOCAL_ANALYTICS_PRIVATE_KEY
+
+
+def _decrypt_analytics_envelope(body: dict) -> dict | None:
+    """
+    Decrypt a hybrid RSA-OAEP + AES-GCM envelope emitted by the frontend
+    tracker into the original JSON payload:
+
+        {
+          "alg": "RSA-OAEP/AES-GCM",
+          "key": "<base64 AES key encrypted with RSA>",
+          "iv": "<base64 IV>",
+          "data": "<base64 ciphertext>"
+        }
+    """
+
+    if not isinstance(body, dict):
+        return None
+
+    key_b64 = body.get("key")
+    iv_b64 = body.get("iv")
+    data_b64 = body.get("data")
+    if not (key_b64 and iv_b64 and data_b64):
+        return None
+
+    private_key = _get_local_analytics_private_key()
+    if private_key is None:
+        # Local private key not configured; caller may choose to ignore.
+        return None
+
+    try:
+        enc_key = base64.b64decode(key_b64)
+        iv = base64.b64decode(iv_b64)
+        ciphertext = base64.b64decode(data_b64)
+
+        aes_key = private_key.decrypt(
+            enc_key,
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None,
+            ),
+        )
+        aesgcm = AESGCM(aes_key)
+        plaintext = aesgcm.decrypt(iv, ciphertext, None)
+        return json.loads(plaintext.decode("utf-8"))
+    except Exception:
+        return None
 
 
 def home(request):
@@ -241,16 +329,10 @@ def product_detail(request, product_id: str):
         .prefetch_related("points")
     )
 
-    # Minimal JSON-LD; you can extend this as needed.
-    product_schema = json.dumps(
-        {
-            "@context": "https://schema.org",
-            "@type": "Product",
-            "name": product.get("product_title"),
-            "description": product.get("short_description"),
-            "image": product.get("image") or product.get("image_url"),
-        }
-    )
+    # Rich JSON-LD graph for all major sections (product, offers, videos, FAQs, etc.).
+    # Kept behind a dedicated utility so the template simply renders a single script
+    # block and the backend stays responsible for generating valid absolute URLs.
+    product_schema = build_product_schema(request, product)
 
     return render(
         request,
@@ -491,6 +573,7 @@ def enquiry_draft(request: HttpRequest) -> JsonResponse:
 
     # If there's nothing meaningful, treat as a no‑op.
     mobile = str(payload.get("mobile") or "").strip()
+    email = str(payload.get("email") or "").strip()
     quantity_raw = payload.get("quantity")
     quantity: int | None
     try:
@@ -501,7 +584,7 @@ def enquiry_draft(request: HttpRequest) -> JsonResponse:
         quantity = None
 
     frequency = str(payload.get("frequency") or "").strip()
-    if not (mobile or quantity or frequency):
+    if not (mobile or email or quantity or frequency):
         return JsonResponse({"status": "ignored"}, status=200)
 
     session_id = str(payload.get("session_id") or "").strip()
@@ -543,6 +626,8 @@ def enquiry_draft(request: HttpRequest) -> JsonResponse:
 
     if mobile:
         lead.mobile = mobile
+    if email:
+        lead.email = email
     lead.quantity = quantity
     if frequency:
         lead.frequency = frequency
@@ -573,9 +658,13 @@ def enquiry_submit(request: HttpRequest) -> JsonResponse:
     payload = _parse_json_body(request)
 
     mobile = str(payload.get("mobile") or "").strip()
-    if not mobile:
+    email = str(payload.get("email") or "").strip()
+    if not (mobile or email):
         return JsonResponse(
-            {"status": "error", "message": "Please enter your mobile number."},
+            {
+                "status": "error",
+                "message": "Please enter your email address or mobile number.",
+            },
             status=400,
         )
 
@@ -608,6 +697,7 @@ def enquiry_submit(request: HttpRequest) -> JsonResponse:
         product_name=product_name,
         quantity=quantity,
         frequency=frequency,
+        email=email,
         mobile=mobile,
         page_url=page_url,
         source=source,
@@ -634,6 +724,172 @@ def enquiry_submit(request: HttpRequest) -> JsonResponse:
             "status": "success",
             "message": message,
             "lead_id": lead.id,
+        },
+        status=200,
+    )
+
+
+@csrf_exempt
+@require_POST
+def analytics_ingest(request: HttpRequest) -> JsonResponse:
+    """
+    Ingest endpoint mirroring the encrypted payload that is sent to 1matrix.io,
+    but stored locally in plain JSON for reporting inside this project.
+
+    Frontend now sends an encrypted envelope for the local endpoint, using
+    the same hybrid RSA-OAEP + AES-GCM scheme as for 1matrix.io. For
+    backwards compatibility, we also accept plain JSON shaped as:
+
+        {"session": {...}, "events": [{...}, ...]}
+    """
+
+    raw = _parse_json_body(request)
+
+    # Backwards-compatible: if payload already looks like the final shape,
+    # we use it directly; otherwise we attempt decryption.
+    if isinstance(raw, dict) and "session" in raw and "events" in raw:
+        data = raw
+    else:
+        data = _decrypt_analytics_envelope(raw) or {}
+
+    if not isinstance(data, dict):
+        return JsonResponse(
+            {"status": "ignored", "reason": "invalid_payload"},
+            status=200,
+        )
+
+    session_data = data.get("session") or {}
+    events = data.get("events") or []
+
+    # Minimal guard: we need a session_id to store anything meaningful.
+    session_id = str(session_data.get("session_id") or "").strip()
+    if not session_id:
+        return JsonResponse(
+            {"status": "ignored", "reason": "missing session_id"},
+            status=200,
+        )
+
+    product_id = str(session_data.get("product_id") or "").strip()[:64]
+
+    def _parse_ts(value: str | None):
+        if not value:
+            return None
+        dt = parse_datetime(value)
+        if dt is None:
+            return None
+        if timezone.is_naive(dt):
+            dt = timezone.make_aware(dt, timezone=timezone.utc)
+        return dt
+
+    started_at = _parse_ts(session_data.get("started_at"))
+    ended_at = _parse_ts(session_data.get("ended_at"))
+
+    session_obj, created = AnalyticsSession.objects.get_or_create(
+        session_id=session_id,
+        product_id=product_id,
+        defaults={
+            "user_id": str(session_data.get("user_id") or "").strip()[:64],
+            "started_at": started_at,
+            "ended_at": ended_at,
+        },
+    )
+
+    # Keep session fields in sync with the latest snapshot coming from the client.
+    # We purposefully truncate strings to avoid unexpected DB errors.
+    session_obj.user_id = str(session_data.get("user_id") or session_obj.user_id or "").strip()[:64]
+    session_obj.started_at = session_obj.started_at or started_at
+    if ended_at:
+        session_obj.ended_at = ended_at
+
+    session_obj.path = (session_data.get("path") or session_obj.path or "")[:500]
+    session_obj.traffic_source = (session_data.get("traffic_source") or session_obj.traffic_source or "")[:64]
+
+    session_obj.utm_source = (session_data.get("utm_source") or session_obj.utm_source or "")[:100]
+    session_obj.utm_medium = (session_data.get("utm_medium") or session_obj.utm_medium or "")[:100]
+    session_obj.utm_campaign = (session_data.get("utm_campaign") or session_obj.utm_campaign or "")[:100]
+    session_obj.utm_term = (session_data.get("utm_term") or session_obj.utm_term or "")[:100]
+    session_obj.utm_content = (session_data.get("utm_content") or session_obj.utm_content or "")[:100]
+
+    session_obj.device = (session_data.get("device") or session_obj.device or "")[:32]
+    session_obj.os = (session_data.get("os") or session_obj.os or "")[:128]
+    session_obj.browser = (session_data.get("browser") or session_obj.browser or "")[:255]
+    session_obj.viewport = (session_data.get("viewport") or session_obj.viewport or "")[:32]
+    session_obj.orientation = (session_data.get("orientation") or session_obj.orientation or "")[:32]
+    session_obj.language = (session_data.get("language") or session_obj.language or "")[:32]
+    session_obj.country = (session_data.get("country") or session_obj.country or "")[:64]
+
+    session_obj.consent = bool(session_data.get("consent", session_obj.consent))
+    session_obj.is_returning = bool(session_data.get("is_returning", session_obj.is_returning))
+    session_obj.sampled = bool(session_data.get("sampled", session_obj.sampled))
+
+    def _as_int(name: str, default: int = 0) -> int:
+        try:
+            return int(session_data.get(name, getattr(session_obj, name, default)) or 0)
+        except (TypeError, ValueError):
+            return getattr(session_obj, name, default)
+
+    session_obj.max_scroll_pct = max(0, min(100, _as_int("max_scroll_pct")))
+    session_obj.cta_clicks = max(0, _as_int("cta_clicks"))
+    session_obj.enquiry_submissions = max(0, _as_int("enquiry_submissions"))
+    session_obj.video_seconds_watched = max(0, _as_int("video_seconds_watched"))
+    session_obj.idle_time_ms = max(0, _as_int("idle_time_ms"))
+    session_obj.events_count = max(0, _as_int("events_count"))
+    session_obj.duration_ms = max(0, _as_int("duration_ms"))
+
+    section_durations = session_data.get("section_durations")
+    if isinstance(section_durations, dict):
+        # Merge with any existing durations, summing values per section.
+        merged = dict(session_obj.section_durations or {})
+        for key, value in section_durations.items():
+            try:
+                inc = int(value or 0)
+            except (TypeError, ValueError):
+                inc = 0
+            if inc <= 0:
+                continue
+            merged[key] = int(merged.get(key, 0)) + inc
+        session_obj.section_durations = merged
+
+    las = str(session_data.get("last_active_section") or "").strip()
+    if las:
+        session_obj.last_active_section = las[:100]
+
+    session_obj.save()
+
+    # Persist each raw event for more detailed analysis.
+    created_events = 0
+    for ev in events:
+        if not isinstance(ev, dict):
+            continue
+        event_type = str(ev.get("event_type") or "").strip()
+        if not event_type:
+            continue
+
+        occurred_raw = ev.get("occurred_at") or session_data.get("started_at")
+        occurred_at = _parse_ts(occurred_raw) or timezone.now()
+
+        page_url = (ev.get("page_url") or session_data.get("path") or "")[:500]
+        referrer = (ev.get("referrer") or "")[:500]
+        payload = ev.get("payload") or {}
+        if not isinstance(payload, dict):
+            payload = {"value": payload}
+
+        AnalyticsEvent.objects.create(
+            session=session_obj,
+            event_type=event_type[:64],
+            occurred_at=occurred_at,
+            page_url=page_url,
+            referrer=referrer,
+            payload=payload,
+        )
+        created_events += 1
+
+    return JsonResponse(
+        {
+            "status": "ok",
+            "session_id": session_obj.session_id,
+            "product_id": session_obj.product_id,
+            "events_saved": created_events,
         },
         status=200,
     )

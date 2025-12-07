@@ -63,6 +63,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # Custom context providing analytics configuration used by
+                # `product_detail.html` for encrypted behavioural tracking.
+                'globe.context_processors.analytics',
             ],
         },
     },
@@ -141,7 +144,54 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # External Globesuggest / 1Matrix API configuration
 # Default base URL now points to the dedicated app host as requested.
 GLOBESUGGEST_API_BASE = os.environ.get('GLOBESUGGEST_API_BASE', 'https://app.1matrix.io')
-GLOBESUGGEST_API_KEY = os.environ.get('GLOBESUGGEST_API_KEY')
+GLOBESUGGEST_API_KEY = os.environ.get('GLOBESUGGEST_API_KEY', 'Helpeza@2312')
+
+# Frontend analytics configuration
+# All of these can be overridden via environment variables so that
+# 1matrix.io can control the ingest endpoint and crypto keys.
+ANALYTICS_INGEST_URL = os.environ.get(
+    'ANALYTICS_INGEST_URL',
+    'https://1matrix.io/api/gs-analytics/ingest/',
+)
+ANALYTICS_SAMPLE_RATE = float(os.environ.get('ANALYTICS_SAMPLE_RATE', '1.0'))
+ANALYTICS_REQUIRE_CONSENT = os.environ.get('ANALYTICS_REQUIRE_CONSENT', 'false').lower() == 'true'
+
+# IMPORTANT:
+# - Replace this default with the real RSA public key for 1matrix.io
+#   by setting the ANALYTICS_REMOTE_PUBLIC_KEY_PEM environment variable.
+# - The corresponding private key must live only on the 1matrix.io backend.
+DEFAULT_ANALYTICS_REMOTE_PUBLIC_KEY_PEM = """-----BEGIN PUBLIC KEY-----
+REPLACE_WITH_REAL_1MATRIX_PUBLIC_KEY
+-----END PUBLIC KEY-----"""
+
+# Backwards-compatible name kept for remote public key.
+ANALYTICS_PUBLIC_KEY_PEM = os.environ.get(
+    'ANALYTICS_PUBLIC_KEY_PEM',
+    DEFAULT_ANALYTICS_REMOTE_PUBLIC_KEY_PEM,
+)
+
+# Public key used by the frontend when encrypting payloads for 1matrix.io.
+ANALYTICS_REMOTE_PUBLIC_KEY_PEM = os.environ.get(
+    'ANALYTICS_REMOTE_PUBLIC_KEY_PEM',
+    ANALYTICS_PUBLIC_KEY_PEM,
+)
+
+# Public / private key pair used for the local analytics ingest endpoint.
+# Only the public key is ever exposed to the frontend. The private key
+# must not be rendered in templates.
+#
+# For local development we read the PEM files generated in the project root:
+#   - local_analytics_public.pem
+#   - local_analytics_private.pem
+# In production you should instead inject these via environment variables.
+local_public_path = BASE_DIR / "local_analytics_public.pem"
+local_private_path = BASE_DIR / "local_analytics_private.pem"
+if local_public_path.exists() and local_private_path.exists():
+    ANALYTICS_LOCAL_PUBLIC_KEY_PEM = local_public_path.read_text(encoding="utf-8")
+    ANALYTICS_LOCAL_PRIVATE_KEY_PEM = local_private_path.read_text(encoding="utf-8")
+else:
+    ANALYTICS_LOCAL_PUBLIC_KEY_PEM = os.environ.get('ANALYTICS_LOCAL_PUBLIC_KEY_PEM', '')
+    ANALYTICS_LOCAL_PRIVATE_KEY_PEM = os.environ.get('ANALYTICS_LOCAL_PRIVATE_KEY_PEM', '')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
