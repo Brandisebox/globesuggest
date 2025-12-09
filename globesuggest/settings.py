@@ -14,7 +14,37 @@ from pathlib import Path
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+# This points to the directory that contains `manage.py`.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# ---------------------------------------------------------------------------
+# Environment loading
+# ---------------------------------------------------------------------------
+# In production and local environments, we prefer to keep secrets and
+# configuration values in a dedicated env file next to `manage.py`:
+#   <project-root>/globesuggest.env
+#
+# Each non-comment, non-empty line should be of the form:
+#   KEY=VALUE
+# Lines starting with "#" are ignored. Values are only injected into
+# os.environ if the key is not already present so that real environment
+# variables always take precedence.
+env_path = BASE_DIR / "globesuggest.env"
+if env_path.exists():
+    try:
+        for raw_line in env_path.read_text(encoding="utf-8").splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+            if key and key not in os.environ:
+                os.environ[key] = value
+    except OSError:
+        # Fail silently if the env file cannot be read; the app will
+        # simply fall back to real environment variables / defaults.
+        pass
 
 
 # Quick-start development settings - unsuitable for production
