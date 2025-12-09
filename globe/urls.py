@@ -14,6 +14,7 @@ from .views import (
     contact_view,
     enquiry_draft,
     enquiry_submit,
+    analytics_forward,
     analytics_ingest,
     test_api,
 )
@@ -25,8 +26,12 @@ urlpatterns = [
     # Product‑specific enquiry & draft endpoints used by product_detail.html
     path("api/enquiry/draft/", enquiry_draft, name="api_enquiry_draft"),
     path("api/enquiry/submit/", enquiry_submit, name="api_enquiry_submit"),
-    # Local analytics ingest endpoint (frontend also sends encrypted payload to 1matrix.io)
+    # Local analytics ingest endpoint (encrypted payload decrypted and stored locally)
     path("api/analytics/ingest/", analytics_ingest, name="api_analytics_ingest"),
+    # Proxy endpoint that forwards the encrypted envelope to 1matrix.io with
+    # the appropriate API key headers. The frontend calls this instead of
+    # hitting 1matrix.io directly.
+    path("api/analytics/forward/", analytics_forward, name="api_analytics_forward"),
     # Legal / policy pages
     path("privacy-policy/", privacy_policy, name="privacy_policy"),
     path("terms-of-service/", terms_of_service, name="terms_of_service"),

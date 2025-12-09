@@ -3881,8 +3881,10 @@
         (function () {
             try {
                 const CONFIG = {
-                    // Remote 1matrix.io ingest endpoint (encrypted).
-                    ingestUrl: '{{ analytics.ingest_url|default:"https://1matrix.io/api/gs-analytics/ingest/" }}',
+                    // Remote 1matrix.io ingest endpoint is called via the
+                    // Django proxy at /api/analytics/forward/ so we don't
+                    // expose any API key in the frontend.
+                    ingestUrl: '/api/analytics/forward/',
                     // Local mirror endpoint inside this Django project.
                     localIngestUrl: '/api/analytics/ingest/',
                     sampleRate: {{ analytics.sample_rate|default:1.0 }},

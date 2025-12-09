@@ -149,9 +149,17 @@ GLOBESUGGEST_API_KEY = os.environ.get('GLOBESUGGEST_API_KEY', 'Helpeza@2312')
 # Frontend analytics configuration
 # All of these can be overridden via environment variables so that
 # 1matrix.io can control the ingest endpoint and crypto keys.
+# NOTE: The browser now posts analytics to the local proxy
+# `/api/analytics/forward/`. This setting represents the upstream
+# 1matrix.io ingest URL used *by the proxy*, not by the browser.
 ANALYTICS_INGEST_URL = os.environ.get(
     'ANALYTICS_INGEST_URL',
     'https://1matrix.io/api/gs-analytics/ingest/',
+)
+# Backwards compatible alias used by the proxy view.
+ANALYTICS_REMOTE_INGEST_URL = os.environ.get(
+    'ANALYTICS_REMOTE_INGEST_URL',
+    ANALYTICS_INGEST_URL,
 )
 ANALYTICS_SAMPLE_RATE = float(os.environ.get('ANALYTICS_SAMPLE_RATE', '1.0'))
 ANALYTICS_REQUIRE_CONSENT = os.environ.get('ANALYTICS_REQUIRE_CONSENT', 'false').lower() == 'true'

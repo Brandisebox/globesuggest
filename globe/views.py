@@ -15,6 +15,8 @@ from django.utils.text import slugify
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
+import logging
+
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
@@ -34,6 +36,7 @@ from .models import (
 from .schema_utils import build_product_schema
 
 
+logger = logging.getLogger(__name__)
 _LOCAL_ANALYTICS_PRIVATE_KEY = None
 
 
@@ -1020,3 +1023,125 @@ def analytics_ingest(request: HttpRequest) -> JsonResponse:
         },
         status=200,
     )
+
+
+@csrf_exempt
+@require_POST
+def analytics_forward(request: HttpRequest) -> JsonResponse:
+    """
+    Proxy endpoint used by the frontend instead of calling 1matrix.io
+    directly. This keeps the secret API key on the server side while
+    still forwarding the encrypted envelope as-is.
+
+    Frontend sends the same envelope shape as before:
+        {"alg": "...", "key": "...", "iv": "...", "data": "..."}
+    """
+
+    try:
+        # Read raw body as text; we treat it as opaque JSON and forward it.
+        body_bytes = request.body or b""
+        body_str = body_bytes.decode("utf-8")
+        # Lightweight validation to avoid proxying garbage.
+        try:
+            parsed = json.loads(body_str)
+        except json.JSONDecodeError:
+            logger.warning("analytics_forward: invalid JSON payload")
+            return JsonResponse(
+                {"status": "error", "reason": "invalid_json"},
+                status=400,
+            )
+
+        if not isinstance(parsed, dict) or not all(
+            k in parsed for k in ("alg", "key", "iv", "data")
+        ):
+            logger.warning("analytics_forward: missing envelope keys")
+            return JsonResponse(
+                {"status": "error", "reason": "invalid_envelope"},
+                status=400,
+            )
+
+        remote_url = getattr(
+            settings,
+            "ANALYTICS_REMOTE_INGEST_URL",
+            getattr(settings, "ANALYTICS_INGEST_URL", ""),
+        )
+        remote_url = (remote_url or "").strip()
+        if not remote_url:
+            logger.warning("analytics_forward: remote ingest URL not configured")
+            return JsonResponse(
+                {"status": "error", "reason": "remote_url_not_configured"},
+                status=500,
+            )
+
+        api_key = getattr(settings, "GLOBESUGGEST_API_KEY", "") or ""
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            # Present a stable origin for upstream permission checks.
+            "Origin": "https://globesuggest.com",
+        }
+        if api_key:
+            headers["X-Globesuggest-Api-Key"] = api_key
+            headers["X-GLOBE"] = api_key
+
+        logger.info(
+            "analytics_forward: forwarding envelope to %s (len=%s)",
+            remote_url,
+            len(body_str),
+        )
+
+        req = urllib.request.Request(
+            remote_url,
+            data=body_str.encode("utf-8"),
+            headers=headers,
+            method="POST",
+        )
+
+        try:
+            with urllib.request.urlopen(req, timeout=8) as resp:
+                upstream_status = resp.status
+                # We don't really need the body, but read a small chunk to
+                # avoid keeping the connection open unnecessarily.
+                _ = resp.read(1024)
+        except urllib.error.HTTPError as exc:
+            upstream_status = exc.code
+            logger.warning(
+                "analytics_forward: upstream HTTPError status=%s reason=%s url=%s",
+                exc.code,
+                getattr(exc, "reason", ""),
+                getattr(exc, "url", remote_url),
+            )
+        except urllib.error.URLError as exc:
+            logger.warning(
+                "analytics_forward: upstream URLError reason=%s url=%s",
+                getattr(exc, "reason", exc),
+                remote_url,
+            )
+            return JsonResponse(
+                {"status": "error", "reason": "upstream_unreachable"},
+                status=502,
+            )
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.warning(
+                "analytics_forward: unexpected upstream error %r url=%s",
+                exc,
+                remote_url,
+            )
+            return JsonResponse(
+                {"status": "error", "reason": "upstream_error"},
+                status=502,
+            )
+
+        return JsonResponse(
+            {
+                "status": "ok",
+                "forwarded_status": upstream_status,
+            },
+            status=200,
+        )
+    except Exception as exc:  # pragma: no cover - defensive
+        logger.warning("analytics_forward: fatal error %r", exc)
+        return JsonResponse(
+            {"status": "error", "reason": "internal_error"},
+            status=500,
+        )
