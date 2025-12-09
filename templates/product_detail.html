@@ -3892,11 +3892,27 @@
                     localPublicKeyPem: '{{ analytics.local_public_key_pem|default:""|escapejs }}',
                     batchIntervalMs: 5000,
                     maxBatch: 40,
+                    // Toggle this to false in production if you want to silence logs.
+                    debug: true,
                 };
 
         const win = window; const doc = document;
+        const dbg = (...args) => {
+            if (CONFIG.debug && win.console && console.log) {
+                console.log("[GS-ANALYTICS]", ...args);
+            }
+        };
         // Client-side sampling
-        if (Math.random() > CONFIG.sampleRate) return;
+        if (Math.random() > CONFIG.sampleRate) {
+            dbg("Sampling skipped this session (sampleRate=", CONFIG.sampleRate, ")");
+            return;
+        }
+        dbg("Analytics tracker initialised", {
+            ingestUrl: CONFIG.ingestUrl,
+            localIngestUrl: CONFIG.localIngestUrl,
+            hasRemoteKey: !!CONFIG.remotePublicKeyPem,
+            hasLocalKey: !!CONFIG.localPublicKeyPem,
+        });
 
         // Session
         const sidKey = 'bs_sid';
@@ -3989,6 +4005,7 @@
         async function encryptAnalyticsPayload(json, publicKeyPem) {
             try {
                 if (!publicKeyPem || !win.crypto || !crypto.subtle) {
+                    dbg("encryptAnalyticsPayload: Web Crypto or public key missing");
                     return null;
                 }
                 const publicKeyBuffer = pemToArrayBuffer(publicKeyPem);
@@ -4032,6 +4049,7 @@
                 };
             } catch (e) {
                 // If encryption fails, we prefer to drop analytics rather than send plain-text.
+                dbg("encryptAnalyticsPayload failed:", e && e.message ? e.message : e);
                 return null;
             }
         }
@@ -4061,6 +4079,7 @@
             if (flushing || q.length === 0) return;
             flushing = true;
             const batch = q.splice(0, CONFIG.maxBatch);
+            dbg("flush() called with batch size", batch.length);
 
             let bodyStr = '';
             try {
@@ -4076,6 +4095,10 @@
                         );
                         if (localEnvelope) {
                             const localBody = JSON.stringify(localEnvelope);
+                            dbg("Sending encrypted batch to local ingest", {
+                                url: CONFIG.localIngestUrl,
+                                bodyBytes: localBody.length,
+                            });
                             if (navigator.sendBeacon) {
                                 const blob = new Blob([localBody], { type: 'application/json' });
                                 navigator.sendBeacon(CONFIG.localIngestUrl, blob);
@@ -4087,14 +4110,23 @@
                                     keepalive: true,
                                 }).catch(() => {});
                             }
+                        } else {
+                            dbg("Local encryptAnalyticsPayload returned null; skipping local ingest");
                         }
                     } catch (e) {
                         // Local mirror is strictly best-effort; ignore errors.
+                        dbg("Local ingest send failed:", e && e.message ? e.message : e);
                     }
+                } else {
+                    dbg("Local ingest disabled or missing public key", {
+                        hasUrl: !!CONFIG.localIngestUrl,
+                        hasKey: !!CONFIG.localPublicKeyPem,
+                    });
                 }
 
                 // (2) Encrypt for 1matrix.io; if this fails we still keep the local copy.
                 if (!CONFIG.ingestUrl || !CONFIG.remotePublicKeyPem) {
+                    dbg("Remote ingest disabled: missing URL or remote public key");
                     flushing = false;
                     return;
                 }
@@ -4103,17 +4135,23 @@
                     CONFIG.remotePublicKeyPem,
                 );
                 if (!encrypted) {
+                    dbg("encryptAnalyticsPayload for remote returned null; skipping remote ingest");
                     flushing = false;
                     return;
                 }
                 bodyStr = JSON.stringify(encrypted);
             } catch (e) {
                 // On unexpected errors we stop this flush; local mirror may still have succeeded.
+                dbg("Unexpected error inside flush() before remote send:", e && e.message ? e.message : e);
                 flushing = false;
                 return;
             }
 
             try {
+                dbg("Sending encrypted batch to remote ingest", {
+                    url: CONFIG.ingestUrl,
+                    bodyBytes: bodyStr.length,
+                });
                 await fetch(CONFIG.ingestUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -4121,13 +4159,15 @@
                     keepalive: true,
                 });
                 localStorage.removeItem(offlineKey);
+                dbg("Remote ingest send OK");
             } catch (e) {
                 // Put back at front and persist
+                dbg("Remote ingest send failed:", e && e.message ? e.message : e);
                 batch.reverse().forEach(ev => q.unshift(ev));
                 localStorage.setItem(offlineKey, JSON.stringify(q.slice(-200)));
             } finally {
                 flushing = false;
-        }
+            }
         }
 
         setInterval(flush, CONFIG.batchIntervalMs);

@@ -160,9 +160,7 @@ ANALYTICS_REQUIRE_CONSENT = os.environ.get('ANALYTICS_REQUIRE_CONSENT', 'false')
 # - Replace this default with the real RSA public key for 1matrix.io
 #   by setting the ANALYTICS_REMOTE_PUBLIC_KEY_PEM environment variable.
 # - The corresponding private key must live only on the 1matrix.io backend.
-DEFAULT_ANALYTICS_REMOTE_PUBLIC_KEY_PEM = """-----BEGIN PUBLIC KEY-----
-REPLACE_WITH_REAL_1MATRIX_PUBLIC_KEY
------END PUBLIC KEY-----"""
+DEFAULT_ANALYTICS_REMOTE_PUBLIC_KEY_PEM = os.environ.get('ANALYTICS_REMOTE_PUBLIC_KEY_PEM', '')
 
 # Backwards-compatible name kept for remote public key.
 ANALYTICS_PUBLIC_KEY_PEM = os.environ.get(
