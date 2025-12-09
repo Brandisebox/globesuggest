@@ -1851,7 +1851,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                         {% for post in product.blog_posts %}
                         {% if forloop.counter <= 3 %} <article class="group">
-                            <a href="{% if product.product_id %}{% url 'blog_detail' product.product_id forloop.counter %}{% else %}#{% endif %}"
+                            <a href="{% if product.product_slug %}{% url 'blog_detail' product.product_slug forloop.counter %}{% elif product.product_id %}{% url 'blog_detail' product.product_id forloop.counter %}{% else %}#{% endif %}"
                                 class="relative block">
                                 <div class="relative w-full aspect-[4/5] overflow-hidden bg-gray-100">
                                     <img src="https://1matrix.io{% if post.image %}{{ post.image }}{% else %}https://1matrix.io/media/product_images/about-us-img-1.webp{% endif %}"
@@ -1880,7 +1880,7 @@
                         {% for post in product.blog_posts %}
                         {% if forloop.counter <= 3 %} <article
                                 class="group snap-start flex-shrink-0 w-[260px] md:w-[320px]">
-                                <a href="{% if product.product_id %}{% url 'blog_detail' product.product_id forloop.counter %}{% else %}#{% endif %}"
+                                <a href="{% if product.product_slug %}{% url 'blog_detail' product.product_slug forloop.counter %}{% elif product.product_id %}{% url 'blog_detail' product.product_id forloop.counter %}{% else %}#{% endif %}"
                                     class="relative block">
                                     <div class="relative w-full aspect-[4/5] overflow-hidden bg-gray-100">
                                         <img src="https://1matrix.io{% if post.image %}{{ post.image }}{% else %}https://1matrix.io/media/product_images/about-us-img-1.webp{% endif %}"

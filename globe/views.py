@@ -1,5 +1,6 @@
 import base64
 import json
+import re
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -255,20 +256,152 @@ def api_search_suggest(request):
     return JsonResponse({"results": results})
 
 
-def product_detail(request, product_id: str):
+_UUID_LIKE_RE = re.compile(r"^[0-9a-fA-F\-]{20,64}$")
+
+
+def _looks_like_product_id(value: str) -> bool:
     """
-    Detail page: fetch a single product from the external API and render
-    the existing `product_detail.html` template.
+    Heuristic to decide whether a URL segment is likely a UUID / product_id
+    (e.g. 'd144f303-05ae-49f1-bab8-1e1f6cfb3c21') versus an SEO slug
+    ('dropper-bottle-supplier').
     """
-    product_id = (product_id or "").strip()
+
+    if not value:
+        return False
+    return bool(_UUID_LIKE_RE.match(value))
+
+
+def _resolve_product_id_from_slug(slug: str) -> str | None:
+    """
+    Best-effort resolution from a product_slug to the upstream product_id.
+
+    The external API only exposes the detail endpoint by product_id
+    (UUID-style identifier), but search responses include both slug and ID.
+    We call the search endpoint with the slug as the query and then pick
+    the first exact slug match to recover the product_id.
+    """
+
+    slug = (slug or "").strip().strip("/")
+    if not slug:
+        return None
+
+    # Normalise once for comparison.
+    target_slug = slugify(slug) or slug
+
+    # Try a few different query shapes in case the upstream search does not
+    # index the raw slug string directly.
+    candidates: list[str] = []
+    candidates.append(slug)  # e.g. "dropper-bottle-supplier"
+    hyphen_to_space = slug.replace("-", " ")
+    if hyphen_to_space != slug:
+        candidates.append(hyphen_to_space)  # "dropper bottle supplier"
+
+    words = hyphen_to_space.split()
+    if words:
+        # Shorter phrases often work better for search endpoints.
+        if len(words) >= 2:
+            candidates.append(" ".join(words[:2]))
+        candidates.append(words[0])
+
+    seen_queries: set[str] = set()
+
+    for q in candidates:
+        q = q.strip()
+        if not q or q in seen_queries:
+            continue
+        seen_queries.add(q)
+
+        try:
+            search_resp = _call_globesuggest_api(
+                "/globesuggest/api/products/search/",
+                params={"q": q},
+            )
+        except Exception:
+            # Network / upstream issues for one query shouldn't block others.
+            continue
+
+        items = search_resp.get("data") or search_resp.get("results") or []
+        if not isinstance(items, (list, tuple)):
+            continue
+
+        # Prefer an exact slug match (normalised) from the payload.
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            raw_slug = (
+                item.get("product_slug")
+                or item.get("slug")
+                or ""
+            )
+            item_slug = slugify(str(raw_slug).strip()) or str(raw_slug).strip()
+            if not item_slug:
+                continue
+            if item_slug != target_slug:
+                continue
+
+            pid = (
+                item.get("product_id")
+                or item.get("id")
+                or ""
+            )
+            pid = str(pid).strip()
+            if pid:
+                return pid
+
+        # Fallback: if exactly one item is returned and it has an ID, we can
+        # safely assume it's the intended product for this slug-derived query.
+        if len(items) == 1 and isinstance(items[0], dict):
+            pid = (
+                items[0].get("product_id")
+                or items[0].get("id")
+                or ""
+            )
+            pid = str(pid).strip()
+            if pid:
+                return pid
+
+    return None
+
+
+def _fetch_product_by_identifier(identifier: str) -> dict:
+    """
+    Fetch a product dict from the external API using either:
+
+    - a direct product_id / UUID (preferred when it looks like an ID)
+    - or a product_slug, which is resolved to product_id via search
+
+    This keeps the public URLs clean (`/product-slug/`) while still
+    calling the upstream detail endpoint by product_id only.
+    """
+
+    identifier = (identifier or "").strip()
+    if not identifier:
+        raise Http404("Product not found")
+
+    # Path 1: looks like a UUID / numeric ID — call the detail endpoint directly.
+    if _looks_like_product_id(identifier):
+        try:
+            upstream = _call_globesuggest_api(
+                f"/globesuggest/api/products/{urllib.parse.quote(identifier)}/"
+            )
+            return upstream.get("data") or upstream
+        except urllib.error.HTTPError as exc:
+            if exc.code != 404:
+                raise Http404("Unable to load product at this time")
+            # If the direct lookup fails with a 404, fall back to slug logic below.
+        except Exception:
+            raise Http404("Unable to load product at this time")
+
+    # Path 2: treat the identifier as a slug and resolve it via search.
+    product_id = _resolve_product_id_from_slug(identifier)
     if not product_id:
         raise Http404("Product not found")
 
-    # Call the upstream detail endpoint using the product UUID / ID.
     try:
         upstream = _call_globesuggest_api(
             f"/globesuggest/api/products/{urllib.parse.quote(product_id)}/"
         )
+        return upstream.get("data") or upstream
     except urllib.error.HTTPError as exc:
         if exc.code == 404:
             raise Http404("Product not found")
@@ -276,7 +409,14 @@ def product_detail(request, product_id: str):
     except Exception:
         raise Http404("Unable to load product at this time")
 
-    raw_product = upstream.get("data") or upstream
+
+def product_detail(request, product_id: str):
+    """
+    Detail page: fetch a single product from the external API and render
+    the existing `product_detail.html` template.
+    """
+    # Accept either a raw product_id or an SEO slug in the URL.
+    raw_product = _fetch_product_by_identifier(product_id)
 
     # Light normalisation so existing template fields have something to show.
     product = {
@@ -293,7 +433,8 @@ def product_detail(request, product_id: str):
             or ""
         ),
         # Ensure templates can always link back to this detail page by ID.
-        "product_id": raw_product.get("product_id") or product_id,
+        # Ensure templates and analytics can consistently access the UUID.
+        "product_id": raw_product.get("product_id") or raw_product.get("id") or product_id,
         "id": raw_product.get("id") or raw_product.get("product_id") or product_id,
     }
 
@@ -351,22 +492,8 @@ def blog_detail(request, product_id: str, blog_index: int):
     Reuses the product detail API and picks the requested blog from
     the product's `blog_posts` collection.
     """
-    product_id = (product_id or "").strip()
-    if not product_id:
-        raise Http404("Product not found")
-
-    try:
-        upstream = _call_globesuggest_api(
-            f"/globesuggest/api/products/{urllib.parse.quote(product_id)}/"
-        )
-    except urllib.error.HTTPError as exc:
-        if exc.code == 404:
-            raise Http404("Product not found")
-        raise Http404("Unable to load product at this time")
-    except Exception:
-        raise Http404("Unable to load product at this time")
-
-    raw_product = upstream.get("data") or upstream
+    # Accept either a raw product_id or an SEO slug in the URL.
+    raw_product = _fetch_product_by_identifier(product_id)
 
     product = {
         **raw_product,
@@ -377,7 +504,7 @@ def blog_detail(request, product_id: str, blog_index: int):
         "short_description": raw_product.get("short_description")
         or raw_product.get("description")
         or "",
-        "product_id": raw_product.get("product_id") or product_id,
+        "product_id": raw_product.get("product_id") or raw_product.get("id") or product_id,
         "id": raw_product.get("id") or raw_product.get("product_id") or product_id,
     }
 

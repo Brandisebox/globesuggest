@@ -349,9 +349,9 @@
         const prefetchLinks = new Set();
 
         function prefetchProductDetail(product) {
-            const id = (product.id || product.product_id || '').toString().trim();
             const slug = (product.slug || '').toString().trim();
-            const identifier = id || slug;
+            const id = (product.id || product.product_id || '').toString().trim();
+            const identifier = slug || id;
             if (!identifier) return;
             const href = `/${encodeURIComponent(identifier)}/`;
             if (prefetchLinks.has(href)) return;
@@ -363,9 +363,9 @@
         }
 
         function navigateToProduct(product) {
-            const id = (product.id || product.product_id || '').toString().trim();
             const slug = (product.slug || '').toString().trim();
-            const identifier = id || slug;
+            const id = (product.id || product.product_id || '').toString().trim();
+            const identifier = slug || id;
             if (identifier) {
                 window.location.href = `/${encodeURIComponent(identifier)}/`;
             } else {
